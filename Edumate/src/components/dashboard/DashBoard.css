@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap');
+*{
+    margin: 0px;
+    padding: 0px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.logo-name-dash{
+    color: #1890FF ;
+    margin-top: 10px;
+    padding-left: 10px;
+}
+.logo-dash{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.title-dash {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 15px;
+    margin-left: 15px;
+}
+
+.content-wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 90vh;
+
+}
+
+.create-form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.table-items{
+    margin: 40px;
+    
+}
+
+.ant-layout-sider-zero-width-trigger{
+    background-color: #003A8C !important;
+
+}
