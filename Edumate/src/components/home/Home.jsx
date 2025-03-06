@@ -1,9 +1,9 @@
 import { EditOutlined, UnorderedListOutlined } from "@ant-design/icons";
 import { Layout, Menu, Typography } from "antd";
-import CreateCourse from "./CreateClassroom";
-import CourseTable from "./ClassroomTable";
+import CreateClassroom from "./CreateClassroom";
+import ClassroomTable from "./ClassroomTable";
 import React, { useState } from "react";
-import "./DashBoard.css";
+import "./Home.css";
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
@@ -12,8 +12,8 @@ const Home = () => {
   const [isList, setList] = useState(false);
 
   const items = [
-    { key: "1", icon: <EditOutlined />, label: "Create Course" },
-    { key: "2", icon: <UnorderedListOutlined />, label: "Course List" },
+    { key: "1", icon: <EditOutlined />, label: "Create Classroom" },
+    { key: "2", icon: <UnorderedListOutlined />, label: "Classroom List" },
   ];
 
   return (
@@ -24,11 +24,11 @@ const Home = () => {
       <Layout>
         <Header style={{ padding: 0, backgroundColor: "#003A8C" }}>
           <div className="title-dash">
-            <Title level={5} style={{ color: "white" }}>{isList ? "Course List" : "Create Course"}</Title>
+            <Title level={5} style={{ color: "white" }}>{isList ? "Classroom List" : "Create Classroom"}</Title>
           </div>
         </Header>
         <Content style={{ margin: "24px 16px 0" }}>
-          {isList ? <CourseTable /> : <CreateCourse />}
+          {isList ? <ClassroomTable /> : <CreateClassroom />}
         </Content>
       </Layout>
     </Layout>

@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { Table, Button, message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
-import "./CourseTable.css";
+import "./ClassroomTable.css";
 
 const CourseTable = () => {
   const [dataSource, setDataSource] = useState([]);
 
   // Fetch courses from the backend
   useEffect(() => {
-    axios.get("http://localhost:8080/api/courses")
+    axios.get("http://localhost:8080/api/classrooms")
       .then((response) => setDataSource(response.data))
       .catch(() => message.error("Failed to load courses"));
   }, []);

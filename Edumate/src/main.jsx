@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 import store from "./app/store";
 import ErrorPage from "./components/error/ErrorPage";
 import Login from "./components/login/Login";
-import Home from "./components/dashboard/Home";
+import Home from "./components/home/Home";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -14,7 +14,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/dashboard" element={<DashBoard />} />
+          <Route path="/home" element={<Home />} />
           <Route path="*" element={<ErrorPage />} />
         </Routes>
       </BrowserRouter>
