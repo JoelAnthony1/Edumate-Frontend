@@ -14,7 +14,7 @@ export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ email, password }, thunkAPI) => {
     try {
-      const response = await axios.post("http://localhost:8080/api/auth/login", {
+      const response = await axios.post("http://localhost:8080/login", {
         email,  // ✅ Fixed incorrect variable
         password,
       });

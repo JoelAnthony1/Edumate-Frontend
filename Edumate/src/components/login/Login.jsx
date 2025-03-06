@@ -12,7 +12,7 @@ const Login = () => {
     try {
       const response = await dispatch(loginUser(values)).unwrap();
       message.success("Login successful!");
-      navigate("/dashboard"); // ✅ Redirect after login
+      navigate("/home"); // ✅ Redirect after login
     } catch (error) {
       message.error(error || "Login failed. Check your credentials.");
     }
