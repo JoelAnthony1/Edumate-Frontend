@@ -33,4 +33,4 @@ const CreateCourse = () => {
   );
 };
 
-export default CreateCourse;
+export default CreateClassroom;

@@ -3,24 +3,23 @@ import axios from "axios";
 
 const initialState = {
   loading: false,
-  userInfo: null, // Stores user details
-  userToken: localStorage.getItem("userToken") || null, // Stores JWT token
+  userInfo: null,
+  userToken: localStorage.getItem("userToken") || null,
   error: null,
-  success: false, // Tracks login status
+  success: false,
 };
 
-// Async thunk for user login (CONNECTS TO BACKEND)
+// ✅ Async thunk for user login (FIXED API ENDPOINT)
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
-  async ({ username, password }, thunkAPI) => {
+  async ({ email, password }, thunkAPI) => {
     try {
       const response = await axios.post("http://localhost:8080/api/auth/login", {
-        username,
+        email,  // ✅ Fixed incorrect variable
         password,
       });
 
-      // Store JWT token in localStorage
-      localStorage.setItem("userToken", response.data.token);
+      localStorage.setItem("userToken", response.data.token); // Store JWT
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || "Login failed");
@@ -33,7 +32,7 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
-      localStorage.removeItem("userToken"); // Remove token on logout
+      localStorage.removeItem("userToken");
       state.userInfo = null;
       state.userToken = null;
       state.success = false;

@@ -1,8 +1,8 @@
 import { Button, Checkbox, Form, Input, message } from "antd";
-import "./Login.css";
 import { useDispatch } from "react-redux";
-import { loginUser } from "../../features/auth/authSlice"; // Import Redux action
+import { loginUser } from "../../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
+import "./Login.css";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -10,25 +10,18 @@ const Login = () => {
 
   const onFinish = async (values) => {
     try {
-      // Dispatch login action (connects to backend)
       const response = await dispatch(loginUser(values)).unwrap();
-
-      // Show success message and navigate to dashboard
       message.success("Login successful!");
-      navigate("/dashboard");
+      navigate("/dashboard"); // ✅ Redirect after login
     } catch (error) {
-      message.error("Login failed. Check your credentials.");
+      message.error(error || "Login failed. Check your credentials.");
     }
   };
 
   return (
     <div className="login-form-wrapper">
       <div className="login-items">
-        <Form
-          initialValues={{ remember: true }}
-          onFinish={onFinish}
-          autoComplete="off"
-        >
+        <Form initialValues={{ remember: true }} onFinish={onFinish} autoComplete="off">
           <div className="logo">
             <img
               style={{ width: "40px", height: "40px", paddingRight: "9px" }}
@@ -38,11 +31,11 @@ const Login = () => {
             <h1 className="logo-name">LMS</h1>
           </div>
 
-          <Form.Item name="username" rules={[{ required: true, message: "required" }]}>
-            <Input placeholder="Username or Email" style={{ width: "296px" }} />
+          <Form.Item name="email" rules={[{ required: true, message: "Email is required" }]}>
+            <Input placeholder="Email" style={{ width: "296px" }} />
           </Form.Item>
 
-          <Form.Item name="password" rules={[{ required: true, message: "required" }]}>
+          <Form.Item name="password" rules={[{ required: true, message: "Password is required" }]}>
             <Input.Password placeholder="Password" style={{ width: "296px" }} />
           </Form.Item>
 

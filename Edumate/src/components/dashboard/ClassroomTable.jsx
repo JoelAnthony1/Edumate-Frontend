@@ -1,20 +1,33 @@
-import { Table, Button } from "antd";
+import { useEffect, useState } from "react";
+import { Table, Button, message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import axios from "axios";
 import "./CourseTable.css";
 
 const CourseTable = () => {
-  const dataSource = [
-    { key: "1", title: "Google UX Design", date: "2023-02-20", enrolled: 30 },
-    { key: "2", title: "React Fundamentals", date: "2023-03-10", enrolled: 45 },
-    { key: "3", title: "Spring Boot Backend", date: "2023-04-15", enrolled: 25 },
-  ];
+  const [dataSource, setDataSource] = useState([]);
 
+  // Fetch courses from the backend
+  useEffect(() => {
+    axios.get("http://localhost:8080/api/courses")
+      .then((response) => setDataSource(response.data))
+      .catch(() => message.error("Failed to load courses"));
+  }, []);
+
+  // Handle Edit (Not implemented yet)
   const handleEdit = (record) => {
     console.log("Edit:", record);
   };
 
-  const handleDelete = (record) => {
-    console.log("Delete:", record);
+  // Handle Delete (DELETE request to backend)
+  const handleDelete = async (record) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/courses/${record.key}`);
+      setDataSource((prev) => prev.filter(course => course.key !== record.key));
+      message.success("Course deleted successfully!");
+    } catch {
+      message.error("Failed to delete course.");
+    }
   };
 
   const columns = [
