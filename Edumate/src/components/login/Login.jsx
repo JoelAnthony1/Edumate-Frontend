@@ -1,7 +1,7 @@
 import { Button, Checkbox, Form, Input, message } from "antd";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../../features/auth/authSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // Import Link
 import "./Login.css";
 
 const Login = () => {
@@ -12,7 +12,7 @@ const Login = () => {
     try {
       const response = await dispatch(loginUser(values)).unwrap();
       message.success("Login successful!");
-      navigate("/home"); // ✅ Redirect after login
+      navigate("/home"); // Redirect after login
     } catch (error) {
       message.error(error || "Login failed. Check your credentials.");
     }
@@ -56,6 +56,22 @@ const Login = () => {
             >
               Login
             </Button>
+          </Form.Item>
+
+          {/* Register Button */}
+          <Form.Item>
+            <Link to="/register">
+              <Button
+                style={{
+                  width: "296px",
+                  borderRadius: "1px",
+                  backgroundColor: "#BCBCBC",
+                  color: "#000",
+                }}
+              >
+                Register
+              </Button>
+            </Link>
           </Form.Item>
         </Form>
       </div>
