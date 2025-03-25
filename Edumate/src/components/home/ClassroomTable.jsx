@@ -157,10 +157,22 @@ const CourseTable = () => {
         if (editingRow === record.key) {
           return (
             <span>
-              <Button type="link" onClick={() => onSaveEdit(record.key)}>
+              <Button 
+                type="link" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSaveEdit(record.key);
+                }}
+              >
                 Save
               </Button>
-              <Button type="link" onClick={onCancelEdit}>
+              <Button 
+                type="link" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCancelEdit();
+                }}
+              >
                 Cancel
               </Button>
             </span>
@@ -171,7 +183,10 @@ const CourseTable = () => {
             <Button 
               type="link" 
               icon={<EditOutlined />} 
-              onClick={() => handleEdit(record)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleEdit(record);
+              }}
               disabled={editingRow !== null}
             >
               Edit
@@ -179,7 +194,10 @@ const CourseTable = () => {
             <Button 
               type="link" 
               icon={<DeleteOutlined />} 
-              onClick={() => handleDelete(record)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete(record);
+              }}
               disabled={editingRow !== null}
             >
               Delete
