@@ -1,16 +1,16 @@
-.assignment-list-container {
+.student-list-container {
     padding: 16px;
   }
   
-  .assignment-list-header {
+  .student-list-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
   }
   
-  .assignment-list-header h2 {
+  .student-list-header h3 {
     margin: 0;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 500;
   }

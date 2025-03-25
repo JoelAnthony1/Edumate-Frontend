@@ -1,3 +1,18 @@
 .table-wrapper {
     height: 80vh;
 }
+.editable-row:hover {
+    background-color: #fafafa;
+  }
+  
+  .editable-row .ant-form-item {
+    margin-bottom: 0;
+  }
+
+.classroom-link {
+    color: #1890ff;
+    text-decoration: none;
+  }
+  .classroom-link:hover {
+    text-decoration: underline;
+  }

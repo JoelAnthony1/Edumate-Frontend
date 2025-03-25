@@ -1,0 +1,26 @@
+.classroom-detail-container {
+  padding: 20px;
+}
+
+.back-button {
+  margin-bottom: 16px;
+  padding-left: 0;
+}
+
+.classroom-detail-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.classroom-tabs .ant-tabs-nav {
+  margin-bottom: 0;
+}
+
+.classroom-tabs .ant-tabs-tab {
+  padding: 12px 24px;
+  font-size: 16px;
+}
+
+.classroom-tabs .ant-tabs-content {
+  padding: 16px;
+}
