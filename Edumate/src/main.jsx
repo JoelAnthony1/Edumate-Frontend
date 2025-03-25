@@ -9,7 +9,26 @@ import Home from "./components/home/Home";
 import Register from "./components/register/Register"; 
 import "./index.css";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+// Import the compatibility package
+import '@ant-design/v5-patch-for-react-19';
+import { unstableSetRender } from 'antd';
+import { createRoot } from 'react-dom/client';
+
+// Set the custom render method
+unstableSetRender((node, container) => {
+  const root = createRoot(container);
+  root.render(node);
+  return async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    root.unmount();
+  };
+});
+
+// Render the application
+const container = document.getElementById("root");
+const root = createRoot(container);
+
+root.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>

@@ -5,7 +5,7 @@
   const CreateClassroom = () => {
     const onFinish = async (values) => {
       try {
-        const response = await axios.post("http://localhost:8080/api/classroom", values);
+        const response = await axios.post("http://localhost:8081/classrooms", values);
         message.success("Classroom created successfully!");
         console.log("Classroom Created:", response.data);
       } catch (error) {
@@ -15,11 +15,11 @@
 
     return (
       <Form name="course-form" onFinish={onFinish} style={{ maxWidth: 400 }}>
-        <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
-          <Input placeholder="Title" />
+        <Form.Item name="classname" rules={[{ required: true, message: "Please enter a classname" }]}>
+          <Input placeholder="Classname" />
         </Form.Item>
-        <Form.Item name="imgurl">
-          <Input placeholder="Image URL" />
+        <Form.Item name="subject">
+          <Input placeholder="Subject" />
         </Form.Item>
         <Form.Item name="description">
           <Input.TextArea placeholder="Description" />
