@@ -9,13 +9,13 @@ const initialState = {
   success: false,
 };
 
-// ✅ Async thunk for user login (FIXED API ENDPOINT)
+// ✅ Async thunk for user login
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ email, password }, thunkAPI) => {
     try {
       const response = await axios.post("http://localhost:8080/login", {
-        email,  // ✅ Fixed incorrect variable
+        email,
         password,
       });
 
@@ -23,6 +23,24 @@ export const loginUser = createAsyncThunk(
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || "Login failed");
+    }
+  }
+);
+
+// ✅ Async thunk for user registration
+export const registerUser = createAsyncThunk(
+  "auth/registerUser",
+  async ({ name, email, password }, thunkAPI) => {
+    try {
+      const response = await axios.post("http://localhost:8080/register", {
+        name,
+        email,
+        password,
+      });
+
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || "Registration failed");
     }
   }
 );
@@ -40,6 +58,7 @@ export const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Login cases
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -53,9 +72,23 @@ export const authSlice = createSlice({
       .addCase(loginUser.rejected, (state, { payload }) => {
         state.loading = false;
         state.error = payload;
+      })
+      // Register cases
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.success = true;
+      })
+      .addCase(registerUser.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.error = payload;
       });
   },
 });
 
 export const { logout } = authSlice.actions;
+// export { registerUser }; // ✅ Export registerUser
 export default authSlice.reducer;
