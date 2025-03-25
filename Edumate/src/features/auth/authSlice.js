@@ -5,6 +5,7 @@ const initialState = {
   loading: false,
   userInfo: null,
   userToken: localStorage.getItem("userToken") || null,
+  userid: localStorage.getItem("userid"),
   error: null,
   success: false,
 };
@@ -20,6 +21,8 @@ export const loginUser = createAsyncThunk(
       });
 
       localStorage.setItem("userToken", response.data.token); // Store JWT
+      localStorage.setItem("userid", response.data.user.id); //Store userid
+      console.log(localStorage.getItem("userid"));
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || "Login failed");
@@ -67,6 +70,7 @@ export const authSlice = createSlice({
         state.loading = false;
         state.userInfo = payload.user;
         state.userToken = payload.token;
+        state.userid = payload.userid;
         state.success = true;
       })
       .addCase(loginUser.rejected, (state, { payload }) => {
