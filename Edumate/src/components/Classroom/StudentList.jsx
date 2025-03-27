@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Added this import
 import { Table, Space, Button, Empty, Modal, Form, Input, message } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from 'axios';
@@ -9,6 +10,7 @@ const StudentList = ({ students = [], classroomId }) => {
   const [data, setData] = useState(students);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate(); // Added this hook
 
   // Add new student
   const handleAdd = async (values) => {
@@ -56,11 +58,6 @@ const StudentList = ({ students = [], classroomId }) => {
 
   const columns = [
     {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-    },
-    {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
@@ -70,6 +67,12 @@ const StudentList = ({ students = [], classroomId }) => {
       key: 'actions',
       render: (_, record) => (
         <Space size="middle">
+          <Button 
+            type="link"
+            onClick={() => navigate(`/students/${record.id}`)} // Fixed navigation
+          >
+            Progress
+          </Button>
           <Button 
             type="link" 
             danger 
