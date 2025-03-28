@@ -7,7 +7,9 @@ import ErrorPage from "./components/error/ErrorPage";
 import Login from "./components/login/Login";
 import Home from "./components/home/Home";
 import Register from "./components/register/Register"; 
-import ClassroomDetail from "./components/home/ClassroomDetails";
+import ClassroomDetail from "./components/Classroom/ClassroomDetails";
+import AssignmentDetail from './components/Assignments/AssignmentDetails';
+import StudentDetails from './components/Students/StudentDetails';
 import "./index.css";
 
 // Import the compatibility package
@@ -39,6 +41,8 @@ root.render(
           <Route path="/home" element={<Home />} />
           <Route path="*" element={<ErrorPage />} />
           <Route path="/classrooms/:id" element={<ClassroomDetail />} />
+          <Route path="/assignments/:id" element={<AssignmentDetail />} />
+          <Route path="/students/:id" element={<StudentDetails />} />
         </Routes>
       </BrowserRouter>
     </Provider>

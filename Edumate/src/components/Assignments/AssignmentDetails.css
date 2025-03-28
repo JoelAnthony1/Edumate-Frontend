@@ -1,0 +1,27 @@
+.assignment-detail-container {
+  padding: 20px;
+}
+
+.assignment-detail-card {
+  margin-top: 20px;
+}
+
+.back-button {
+  margin-bottom: 10px;
+}
+
+.ant-upload.ant-upload-drag {
+  padding: 16px;
+  background: #fafafa;
+  border: 1px dashed #d9d9d9;
+  border-radius: 2px;
+}
+
+.ant-upload.ant-upload-drag:hover {
+  border-color: #1890ff;
+}
+
+pre {
+  font-family: inherit;
+  white-space: pre-wrap;
+}
