@@ -13,7 +13,7 @@ const ClassroomDetail = () => {
   const [classroom, setClassroom] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('assignments');
-
+  console.log('ClassroomDetail ID from route:', id);
   useEffect(() => {
     const fetchClassroom = async () => {
       try {
@@ -51,10 +51,7 @@ const ClassroomDetail = () => {
     {
       key: 'students',
       label: 'Students',
-      children: <StudentList 
-      students={classroom.students || []} 
-      classroomId={classroom.id} 
-    />,
+      children: <StudentList classroomId={classroom.id} />, // Just pass classroomId
     },
   ];
 
