@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, message, Space, Modal, Form, Input } from 'antd';
+import { Table, Button, message, Modal, Form, Input, Space } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import './AssignmentList.css';
@@ -12,98 +12,88 @@ const AssignmentList = ({ classroomId }) => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchAssignments = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(`http://localhost:8082/assignment?classroomId=${classroomId}`);
-        
-        // Assuming your backend returns an array of assignments with this structure:
-        const fetchedAssignments = response.data.map(assignment => ({
-          id: assignment.id,
-          classroomId: assignment.classroomId,
-          subject: assignment.subject,
-          gradingCriteria: assignment.gradingCriteria,
-          rubricsCount: assignment.rubrics?.length || 0 // Count the number of rubrics
-        }));
-        
-        setAssignments(fetchedAssignments);
-      } catch (error) {
-        message.error('Failed to load assignments');
-        console.error('Error fetching assignments:', error);
-        
-        // Fallback to mock data if API fails (remove in production)
-        const mockAssignments = [
-          {
-            id: '1',
-            classroomId: classroomId,
-            subject: 'Mathematics',
-            gradingCriteria: 'Complete all problems with work shown',
-            rubricsCount: 1
-          },
-          {
-            id: '2',
-            classroomId: classroomId,
-            subject: 'Science',
-            gradingCriteria: 'Follow scientific method properly',
-            rubricsCount: 2
-          }
-        ];
-        setAssignments(mockAssignments);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchAssignments();
-  }, [classroomId]);
-
-
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleCancel = () => {
-    form.resetFields();
-    setIsModalVisible(false);
-  };
-
-  const handleCreate = async () => {
+  // Fetch assignments function - PRESERVED
+  const fetchAssignments = async () => {
     try {
       setLoading(true);
-      const values = await form.validateFields();
+      const response = await axios.get(`http://localhost:8082/rubrics/classrooms/${classroomId}`);
       
-      // In production: await axios.post('http://localhost:8082/assignment', {
-      //   classroomId,
-      //   subject: values.subject,
-      //   gradingCriteria: values.gradingCriteria
-      // });
-
-      const newAssignment = {
-        id: `${assignments.length + 1}`,
-        classroomId: classroomId,
-        subject: values.subject,
-        gradingCriteria: values.gradingCriteria,
-        rubricsCount: 0
-      };
-
-      setAssignments([...assignments, newAssignment]);
-      message.success('Assignment created successfully');
-      form.resetFields();
-      setIsModalVisible(false);
+      setAssignments(response.data.map(assignment => ({
+        id: assignment.id,
+        title: assignment.title,
+        questions: assignment.questions, // Added questions to display
+        gradingCriteria: assignment.gradingCriteria,
+        rubricsCount: assignment.images?.length || 0,
+      })));
     } catch (error) {
-      message.error('Failed to create assignment');
-      console.error(error);
+      message.error('Failed to load assignments');
+      console.error('Full error:', error.response?.data || error.message);
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    if (classroomId) fetchAssignments();
+  }, [classroomId]);
+
+  // Show modal function - PRESERVED
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  // Handle cancel function - PRESERVED
+  const handleCancel = () => {
+    form.resetFields();
+    setIsModalVisible(false);
+  };
+
+  // Handle create function - UPDATED with questions
+  const handleCreate = async () => {
+    try {
+      setLoading(true);
+      const values = await form.validateFields();
+      
+      const newRubric = {
+        classroomId: classroomId,
+        title: values.title,
+        questions: values.questions, // Added questions field
+        gradingCriteria: values.gradingCriteria,
+        studentIds: []
+      };
+
+      const response = await axios.post('http://localhost:8082/rubrics', newRubric, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      // Refresh the list after creation
+      await fetchAssignments();
+
+      message.success('Assignment created successfully');
+      form.resetFields();
+      setIsModalVisible(false);
+    } catch (error) {
+      message.error('Failed to create assignment');
+      console.error('Creation error:', error.response?.data || error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Updated columns to include questions
   const columns = [
     {
-      title: 'Subject',
-      dataIndex: 'subject',
-      key: 'subject',
+      title: 'Title',
+      dataIndex: 'title',
+      key: 'title',
+    },
+    {
+      title: 'Questions',
+      dataIndex: 'questions',
+      key: 'questions',
+      render: text => <span style={{ whiteSpace: 'pre-line' }}>{text}</span>
     },
     {
       title: 'Grading Criteria',
@@ -112,10 +102,10 @@ const AssignmentList = ({ classroomId }) => {
       render: text => <span style={{ whiteSpace: 'pre-line' }}>{text}</span>
     },
     {
-      title: 'Rubrics',
+      title: 'Attachments',
       dataIndex: 'rubricsCount',
       key: 'rubricsCount',
-      render: count => `${count} file(s) attached`
+      render: count => `${count} file(s)`
     },
     {
       title: 'Actions',
@@ -156,18 +146,30 @@ const AssignmentList = ({ classroomId }) => {
 
       <Modal
         title="Create New Assignment"
-        visible={isModalVisible}
+        open={isModalVisible}
         onOk={handleCreate}
         onCancel={handleCancel}
         confirmLoading={loading}
+        width={800}
       >
         <Form form={form} layout="vertical">
           <Form.Item
-            name="subject"
-            label="Subject"
-            rules={[{ required: true, message: 'Please input the subject!' }]}
+            name="title"
+            label="Title"
+            rules={[{ required: true, message: 'Please input the title!' }]}
           >
-            <Input placeholder="Enter subject (e.g., Mathematics)" />
+            <Input placeholder="Enter assignment title" />
+          </Form.Item>
+          
+          <Form.Item
+            name="questions"
+            label="Questions"
+            rules={[{ required: true, message: 'Please input the questions!' }]}
+          >
+            <Input.TextArea 
+              rows={4}
+              placeholder="Enter the assignment questions"
+            />
           </Form.Item>
           
           <Form.Item
@@ -177,7 +179,7 @@ const AssignmentList = ({ classroomId }) => {
           >
             <Input.TextArea 
               rows={4} 
-              placeholder="Enter grading criteria details" 
+              placeholder="Describe how this assignment will be graded" 
             />
           </Form.Item>
         </Form>
