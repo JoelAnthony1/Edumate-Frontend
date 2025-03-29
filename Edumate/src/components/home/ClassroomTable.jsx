@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Table, Button, message, Form, Input } from "antd";
+import { Table, Button, message, Form, Input, Space } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
@@ -19,20 +19,20 @@ const CourseTable = () => {
     axios.get("http://localhost:8081/classrooms", {
       params: { userId }
     })
-    .then((response) => {
-      const formattedData = response.data.map(classroom => ({
-        key: classroom.id,
-        id: classroom.id,
-        title: classroom.classname,
-        subject: classroom.subject,
-        description: classroom.description,
-      }));
-      setDataSource(formattedData);
-    })
-    .catch((error) => {
-      message.error("Failed to load courses");
-      console.error("Error:", error);
-    });
+      .then((response) => {
+        const formattedData = response.data.map(classroom => ({
+          key: classroom.id,
+          id: classroom.id,
+          title: classroom.classname,
+          subject: classroom.subject,
+          description: classroom.description,
+        }));
+        setDataSource(formattedData);
+      })
+      .catch((error) => {
+        message.error("Failed to load courses");
+        console.error("Error:", error);
+      });
   }, [userId]);
 
   const handleEdit = (record) => {
@@ -58,7 +58,7 @@ const CourseTable = () => {
       };
 
       await axios.put(`http://localhost:8081/classrooms/${key}`, updatedData);
-      
+
       setDataSource(prev => prev.map(item => {
         if (item.key === key) {
           return {
@@ -110,8 +110,8 @@ const CourseTable = () => {
           );
         }
         return (
-          <Link 
-            to={`/classrooms/${record.id}`} 
+          <Link
+            to={`/classrooms/${record.id}`}
             className="classroom-link"
             onClick={(e) => editingRow && e.preventDefault()}
           >
@@ -157,51 +157,55 @@ const CourseTable = () => {
         if (editingRow === record.key) {
           return (
             <span>
-              <Button 
-                type="link" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSaveEdit(record.key);
-                }}
-              >
-                Save
-              </Button>
-              <Button 
-                type="link" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onCancelEdit();
-                }}
-              >
-                Cancel
-              </Button>
+              <Space size="middle">
+                <Button
+                  type="link"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSaveEdit(record.key);
+                  }}
+                >
+                  Save
+                </Button>
+                <Button
+                  type="link"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onCancelEdit();
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Space>
             </span>
           );
         }
         return (
           <span>
-            <Button 
-              type="link" 
-              icon={<EditOutlined />} 
-              onClick={(e) => {
-                e.stopPropagation();
-                handleEdit(record);
-              }}
-              disabled={editingRow !== null}
-            >
-              Edit
-            </Button>
-            <Button 
-              type="link" 
-              icon={<DeleteOutlined />} 
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDelete(record);
-              }}
-              disabled={editingRow !== null}
-            >
-              Delete
-            </Button>
+            <Space size="middle">
+              <Button
+                type="link"
+                icon={<EditOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEdit(record);
+                }}
+                disabled={editingRow !== null}
+              >
+                Edit
+              </Button>
+              <Button
+                type="link"
+                icon={<DeleteOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(record);
+                }}
+                disabled={editingRow !== null}
+              >
+                Delete
+              </Button>
+            </Space>
           </span>
         );
       },

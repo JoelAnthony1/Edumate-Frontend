@@ -1,16 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap');
-*{
+
+* {
     margin: 0px;
     padding: 0px;
-    font-family: 'Roboto', sans-serif;
+    font-family: "Open Sans", sans-serif;
 }
 
-.logo-name-dash{
-    color: #1890FF ;
+.logo-name-dash {
+    color: #1890FF;
     margin-top: 10px;
     padding-left: 10px;
 }
-.logo-dash{
+
+.logo-dash {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
@@ -18,22 +20,32 @@
     justify-content: flex-start;
 }
 
-.title-dash {
+.home-main-content {
+    margin: 4rem 0;
     display: flex;
-    justify-content: flex-start;
-    margin-top: 15px;
-    margin-left: 15px;
+    justify-content: center;
 }
 
-.content-wrapper{
+.title-dash {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 3rem;
+}
+
+.title-dash h5 {
+    font-size: 28px;
+    font-family: "Inter", sans-serif;
+    margin-bottom: 0 !important;
+}
+
+.content-wrapper {
     display: flex;
     justify-content: center;
     align-items: flex-start;
     height: 90vh;
-
 }
 
-.create-form{
+.create-form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -41,12 +53,61 @@
 
 }
 
-.table-items{
+.table-items {
     margin: 40px;
-    
+
 }
 
-.ant-layout-sider-zero-width-trigger{
-    background-color: #003A8C !important;
+.ant-layout {
+    background-color: #cbe3ef;
+    height: 100vh;
+}
 
+.ant-layout-sider-children .logo {
+    background: #ffffff;
+    margin-bottom: 20px !important;
+    -webkit-box-shadow: 0px 8px 10px 0px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0px 8px 10px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: 0px 8px 10px 0px rgba(0, 0, 0, 0.5);
+}
+
+ul.ant-menu {
+    background: none;
+}
+
+.ant-table {
+    background: none !important;
+}
+
+.ant-table-wrapper .ant-table-container table>thead>tr:first-child >*:first-child {
+    border-start-start-radius: 0px;
+}
+
+.ant-table-wrapper .ant-table-container table>thead>tr:first-child >*:last-child {
+    border-start-end-radius: 0px;
+}
+
+.ant-table-cell {
+    background-color: #ffffff;
+}
+
+.ant-table-thead .ant-table-cell {
+    border-bottom: 1px solid #dedede !important;
+    background: #3a4163 !important;
+    color: #ffffff !important
+}
+
+.ant-table-cell::before {
+    background-color: #dedede !important;
+}
+
+.ant-table-cell a.classroom-link {
+    text-decoration: underline;
+    color: #5aa8d6;
+    font-weight: 600;
+}
+
+li.ant-menu-item-selected {
+    background-color: #5aa8d6 !important;
+    color: #ffffff !important;
 }

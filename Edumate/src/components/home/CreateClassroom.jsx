@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Form, Input, message } from "antd";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import "./CreateClassroom.css";
 
 const CreateClassroom = () => {
   const userid = useSelector((state) => state.auth.userid);
@@ -22,7 +23,7 @@ const CreateClassroom = () => {
   };
 
   return (
-    <Form name="course-form" onFinish={onFinish} style={{ maxWidth: 400 }}>
+    <Form name="course-form" onFinish={onFinish}>
       <Form.Item name="classname" rules={[{ required: true, message: "Please enter a classname" }]}>
         <Input placeholder="Classname" />
       </Form.Item>

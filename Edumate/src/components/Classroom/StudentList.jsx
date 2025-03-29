@@ -227,6 +227,7 @@ useEffect(() => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      className: 'student-name-column',
     },
     {
       title: 'Email',

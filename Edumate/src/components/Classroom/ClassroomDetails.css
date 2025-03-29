@@ -1,16 +1,21 @@
 .classroom-detail-container {
+  background: #cbe3ef;
   padding: 20px;
+  min-height: calc(100vh - 40px);
 }
 
 .back-button {
-  margin-bottom: 16px;
+  margin: 20px 0 !important;
   padding-left: 0;
 }
 
 .classroom-detail-card {
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  -webkit-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.5);
+  box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.5);
 }
+
 
 .classroom-tabs .ant-tabs-nav {
   margin-bottom: 0;
@@ -21,6 +26,27 @@
   font-size: 16px;
 }
 
+.ant-tabs .ant-tabs-tab:hover {
+  color: #5aa8d6;
+}
+
 .classroom-tabs .ant-tabs-content {
   padding: 16px;
+}
+
+.ant-tabs .ant-tabs-tab .ant-tabs-tab-btn {
+  font-weight: 600;
+}
+
+.ant-tabs .ant-tabs-tab .ant-tabs-tab-btn:hover {
+  color: #5aa8d6;
+}
+
+.ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #5aa8d6;
+  text-shadow: 0 0 0.25px currentcolor;
+}
+
+.ant-tabs .ant-tabs-ink-bar {
+  background: #5aa8d6;
 }

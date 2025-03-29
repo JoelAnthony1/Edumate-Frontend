@@ -18,24 +18,30 @@ const Home = () => {
 
   return (
     <Layout>
-      <Sider style={{ backgroundColor: "#FFFFFF" }} breakpoint="lg" collapsedWidth="0">
+      <Sider style={{ backgroundColor: "#fafcfb" }} breakpoint="lg" collapsedWidth="0">
+      <div className="logo">
+            <img
+              style={{ width: "200px", height: "200px"}}
+              src="../src/images/EduMate_logo.png"
+              alt="logo"
+            />
+          </div>
         <Menu 
           onClick={(e) => setList(e.key === "2")} 
-          style={{ marginTop: "20px" }} 
           defaultSelectedKeys={["2"]} // Changed to "2" to highlight Classroom List by default
           mode="inline" 
           items={items} 
         />
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, backgroundColor: "#003A8C" }}>
+        <Header style={{ padding: 0, backgroundColor: "#5aa8d6" }}>
           <div className="title-dash">
             <Title level={5} style={{ color: "white" }}>
               {isList ? "Classroom List" : "Create Classroom"}
             </Title>
           </div>
         </Header>
-        <Content style={{ margin: "24px 16px 0" }}>
+        <Content class="home-main-content">
           {isList ? <ClassroomTable /> : <CreateClassroom />}
         </Content>
       </Layout>

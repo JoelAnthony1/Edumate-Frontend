@@ -24,11 +24,10 @@ const Login = () => {
         <Form initialValues={{ remember: true }} onFinish={onFinish} autoComplete="off">
           <div className="logo">
             <img
-              style={{ width: "40px", height: "40px", paddingRight: "9px" }}
-              src="https://seeklogo.com/images/A/ant-design-logo-EAB6B3D5D9-seeklogo.com.png"
+              style={{ width: "250px", height: "250px"}}
+              src="../src/images/EduMate_logo.png"
               alt="logo"
             />
-            <h1 className="logo-name">LMS</h1>
           </div>
 
           <Form.Item name="email" rules={[{ required: true, message: "Email is required" }]}>
@@ -47,29 +46,28 @@ const Login = () => {
             <Button
               style={{
                 width: "296px",
-                backgroundColor: "#003A8C",
-                borderRadius: "1px",
+                backgroundColor: "#5aa8d6"
               }}
               type="primary"
               htmlType="submit"
               className="login-button"
             >
-              Login
+              LOGIN
             </Button>
           </Form.Item>
 
           {/* Register Button */}
           <Form.Item>
             <Link to="/register">
-              <Button
+              <Button id="register-btn"
                 style={{
                   width: "296px",
-                  borderRadius: "1px",
-                  backgroundColor: "#BCBCBC",
+                  backgroundColor: "#fafcfb",
                   color: "#000",
+                  border: "1px solid black"
                 }}
               >
-                Register
+                REGISTER
               </Button>
             </Link>
           </Form.Item>

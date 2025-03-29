@@ -1,16 +1,20 @@
 .student-list-container {
-    padding: 16px;
-  }
-  
-  .student-list-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  
-  .student-list-header h3 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 500;
-  }
+  padding: 16px;
+}
+
+.student-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.student-list-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.ant-table-cell.student-name-column {
+  font-weight: 600;
+}

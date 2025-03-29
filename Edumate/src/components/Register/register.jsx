@@ -25,11 +25,10 @@ const Register = () => {
         <Form onFinish={onFinish} autoComplete="off">
           <div className="logo">
             <img
-              style={{ width: "40px", height: "40px", paddingRight: "9px" }}
-              src="https://seeklogo.com/images/A/ant-design-logo-EAB6B3D5D9-seeklogo.com.png"
+              style={{ width: "250px", height: "250px"}}
+              src="../src/images/EduMate_logo.png"
               alt="logo"
             />
-            <h1 className="logo-name">LMS</h1>
           </div>
 
           <Form.Item name="name" rules={[{ required: true, message: "Name is required" }]}>
@@ -48,8 +47,7 @@ const Register = () => {
             <Button
               style={{
                 width: "296px",
-                backgroundColor: "#003A8C",
-                borderRadius: "1px",
+                backgroundColor: "#5aa8d6"
               }}
               type="primary"
               htmlType="submit"
@@ -60,7 +58,7 @@ const Register = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button type="link" onClick={() => navigate("/")}>
+            <Button id="go-to-login-btn" type="link" onClick={() => navigate("/")}>
               Already have an account? Login
             </Button>
           </Form.Item>
