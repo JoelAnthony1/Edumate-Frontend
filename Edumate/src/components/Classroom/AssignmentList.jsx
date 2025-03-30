@@ -160,28 +160,7 @@ const AssignmentList = ({ classroomId }) => {
           >
             <Input placeholder="Enter assignment title" />
           </Form.Item>
-          
-          <Form.Item
-            name="questions"
-            label="Questions"
-            rules={[{ required: true, message: 'Please input the questions!' }]}
-          >
-            <Input.TextArea 
-              rows={4}
-              placeholder="Enter the assignment questions"
-            />
-          </Form.Item>
-          
-          <Form.Item
-            name="gradingCriteria"
-            label="Grading Criteria"
-            rules={[{ required: true, message: 'Please input the grading criteria!' }]}
-          >
-            <Input.TextArea 
-              rows={4} 
-              placeholder="Describe how this assignment will be graded" 
-            />
-          </Form.Item>
+
         </Form>
       </Modal>
     </div>

@@ -10,6 +10,7 @@ import Register from "./components/register/Register";
 import ClassroomDetail from "./components/Classroom/ClassroomDetails";
 import AssignmentDetail from './components/Assignments/AssignmentDetails';
 import StudentDetails from './components/Students/StudentDetails';
+import StudentList from './components/Classroom/StudentList';
 import "./index.css";
 
 // Import the compatibility package
@@ -43,6 +44,8 @@ root.render(
           <Route path="/classrooms/:id" element={<ClassroomDetail />} />
           <Route path="/assignments/:id" element={<AssignmentDetail />} />
           <Route path="/students/:id" element={<StudentDetails />} />
+          <Route path="/classrooms/:classroomId/students" element={<StudentList />} />
+          <Route path="/classrooms/:classroomId/students/:studentId" element={<StudentDetails />} />
         </Routes>
       </BrowserRouter>
     </Provider>
