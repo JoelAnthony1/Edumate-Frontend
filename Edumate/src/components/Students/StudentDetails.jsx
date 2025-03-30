@@ -11,6 +11,7 @@ import {
   Tag,
   Modal,
   message,
+  Empty,
   Upload,
 } from 'antd';
 import {
@@ -37,60 +38,58 @@ const StudentDetails = () => {
   const [uploading, setUploading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false); // New state for confirmation
 
-  // Mock data
-  const mockStudents = {
-    '1': { id: '1', name: 'John Doe' },
-    '2': { id: '2', name: 'Jane Smith' },
-  };
 
-  const mockRubrics = [
-    { id: 1, title: 'Math Midterm Rubric', criteria: 'Algebra, Geometry, Calculus', totalMarks: 100, questions: '1. Solve quadratic equations\n2. Prove geometric theorems\n3. Calculate derivatives', gradingCriteria: '1. Correct solution (50%)\n2. Proper methodology (30%)\n3. Neat presentation (20%)' },
-    { id: 2, title: 'Science Project Rubric', criteria: 'Research, Presentation, Creativity', totalMarks: 50, questions: '1. Research depth\n2. Experimental design\n3. Presentation quality', gradingCriteria: '1. Bibliography (20%)\n2. Methodology (30%)\n3. Visual aids (20%)\n4. Conclusions (30%)' },
-  ];
 
-  const mockProgressReports = {
-    '1': 'John is performing well overall with a 75% completion rate. He excels in mathematics but needs to submit his science project.',
-    '2': 'Jane is making good progress (60%). She submitted her science project but was late with math homework.',
-  };
-
-  const mockSubmissions = [
-    { id: 1, studentId: '1', classroomId: '101', markingRubric: { title: 'Math Midterm Rubric' }, submitted: true, graded: true, score: 85, feedback: 'Good job, but you can improve on calculus.', written_answer: 'This is a mock answer', validated_by_bayesian: true },
-    { id: 2, studentId: '1', classroomId: '101', markingRubric: { title: 'Science Project Rubric' }, submitted: false, graded: false, score: null, feedback: null, written_answer: '', validated_by_bayesian: false },
-    { id: 3, studentId: '2', classroomId: '101', markingRubric: { title: 'Math Midterm Rubric' }, submitted: true, graded: true, score: 70, feedback: 'You were late, but the work was satisfactory.', written_answer: 'Another mock answer', validated_by_bayesian: true },
-    { id: 4, studentId: '2', classroomId: '101', markingRubric: { title: 'Science Project Rubric' }, submitted: true, graded: true, score: 92, feedback: 'Excellent work!', written_answer: 'A great answer', validated_by_bayesian: false },
-  ];
-
-  // Fetch all initial data
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
         setLoading(true);
-
+  
         const [studentRes, submissionsRes, rubricsRes] = await Promise.all([
           axios.get(`http://localhost:8081/students/${studentId}`),
-          axios.get(`http://localhost:8082/submissions/classrooms/${classroomId}/students/${studentId}`),
-          axios.get(`http://localhost:8082/rubrics/classrooms/${classroomId}/students/${studentId}`),
+          axios.get(
+            `http://localhost:8082/submissions/classrooms/${classroomId}/students/${studentId}`,
+            { validateStatus: (status) => status === 200 || status === 404 }
+          ),
+          axios.get(
+            `http://localhost:8082/rubrics/classrooms/${classroomId}/students/${studentId}`,
+            { validateStatus: (status) => status === 200 || status === 404 }
+          ),
         ]);
-
+  
         setStudent(studentRes.data);
-        setSubmissions(submissionsRes.data);
-        setRubrics(rubricsRes.data);
+  
+        // If submissions API returns 404, set submissions to an empty array.
+        if (submissionsRes.status === 404) {
+          setSubmissions([]);
+        } else {
+          setSubmissions(submissionsRes.data);
+        }
+  
+        // Do the same for rubrics.
+        if (rubricsRes.status === 404) {
+          setRubrics([]);
+        } else {
+          setRubrics(rubricsRes.data);
+        }
+  
         setUsingMockData(false);
       } catch (error) {
-        console.error('API Error, using mock data:', error);
-        setUsingMockData(true);
-
-        setStudent(mockStudents[studentId] || null);
-        setSubmissions(mockSubmissions.filter((sub) => sub.studentId === studentId));
-        setRubrics(mockRubrics);
+        console.error('API Error:', error);
+        message.error('Error fetching student details. Please try again later.');
+  
+        // Instead of using mock data, clear out the data
+        setStudent(null);
+        setSubmissions([]);
+        setRubrics([]);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchInitialData();
   }, [studentId, classroomId]);
-
+  
   // Fetch rubrics from backend - Updated endpoint
   const fetchRubrics = async () => {
     try {
@@ -371,6 +370,10 @@ const StudentDetails = () => {
           rowKey="id"
           pagination={false}
           loading={loading}
+          locale={{
+            emptyText: <Empty description="No submissions found" />
+          }}
+          
         />
 
         <Divider orientation="left">Progress Report</Divider>

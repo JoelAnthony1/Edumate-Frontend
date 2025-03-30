@@ -164,6 +164,21 @@ const StudentList = ({ classroomId }) => {
         await axios.post(
           `http://localhost:8081/classrooms/${classroomId}/students/${response.data.id}`
         );
+
+        await axios.post(
+          'http://localhost:8082/analysis',
+          {
+            classroomId: Number(classroomId), // ensure it's a number if needed
+            studentId: response.data.id,
+            feedbackHistory: [],
+            summary: ""
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        );
         
         setData(prev => [...prev, response.data]);
         message.success('Student added successfully');
