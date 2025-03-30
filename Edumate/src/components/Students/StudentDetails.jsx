@@ -35,6 +35,7 @@ const StudentDetails = () => {
   const [selectedRubric, setSelectedRubric] = useState(null);
   const [feedback, setFeedback] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false); // New state for confirmation
 
   // Mock data
   const mockStudents = {
@@ -53,10 +54,10 @@ const StudentDetails = () => {
   };
 
   const mockSubmissions = [
-    { id: 1, studentId: '1', classroomId: '101', markingRubric: { title: 'Math Midterm Rubric' }, submitted: true, graded: true, score: 85, feedback: 'Good job, but you can improve on calculus.' },
-    { id: 2, studentId: '1', classroomId: '101', markingRubric: { title: 'Science Project Rubric' }, submitted: false, graded: false, score: null, feedback: null },
-    { id: 3, studentId: '2', classroomId: '101', markingRubric: { title: 'Math Midterm Rubric' }, submitted: true, graded: true, score: 70, feedback: 'You were late, but the work was satisfactory.' },
-    { id: 4, studentId: '2', classroomId: '101', markingRubric: { title: 'Science Project Rubric' }, submitted: true, graded: true, score: 92, feedback: 'Excellent work!' },
+    { id: 1, studentId: '1', classroomId: '101', markingRubric: { title: 'Math Midterm Rubric' }, submitted: true, graded: true, score: 85, feedback: 'Good job, but you can improve on calculus.', written_answer: 'This is a mock answer', validated_by_bayesian: true },
+    { id: 2, studentId: '1', classroomId: '101', markingRubric: { title: 'Science Project Rubric' }, submitted: false, graded: false, score: null, feedback: null, written_answer: '', validated_by_bayesian: false },
+    { id: 3, studentId: '2', classroomId: '101', markingRubric: { title: 'Math Midterm Rubric' }, submitted: true, graded: true, score: 70, feedback: 'You were late, but the work was satisfactory.', written_answer: 'Another mock answer', validated_by_bayesian: true },
+    { id: 4, studentId: '2', classroomId: '101', markingRubric: { title: 'Science Project Rubric' }, submitted: true, graded: true, score: 92, feedback: 'Excellent work!', written_answer: 'A great answer', validated_by_bayesian: false },
   ];
 
   // Fetch all initial data
@@ -186,12 +187,14 @@ const StudentDetails = () => {
       );
 
       message.success('Images uploaded successfully!');
-      await processSubmission(submissionId); // Chain the operations
+      setShowConfirm(true); // Show confirmation
+      setUploading(false);
+      setLoading(false);
     } catch (error) {
       console.error('Image upload error:', error);
       message.error('Failed to upload images.');
-    } finally {
       setUploading(false);
+      setLoading(false);
     }
   };
 
@@ -199,24 +202,25 @@ const StudentDetails = () => {
     try {
       setLoading(true);
 
-      // 1. Extract PNG
+      // 2. Extract PNG
       await axios.put(`http://localhost:8082/submissions/${submissionId}/extractPNG`);
 
-      // 2. Mark as Submitted (and grade)
+      // 3. Mark as Submitted (and grade)
       await axios.put(`http://localhost:8082/submissions/${submissionId}/mark-submitted`);
 
-      // 3. Mark as Graded
+      // 4. Mark graded
       await axios.put(`http://localhost:8082/submissions/${submissionId}/mark-graded`);
 
-      message.success('Submission processed successfully!');
+      message.success('Submission processed and graded successfully!');
       const submissionsRes = await axios.get(
         `http://localhost:8082/submissions/classrooms/${classroomId}/students/${studentId}`
       );
       setSubmissions(submissionsRes.data);
-
+      setShowConfirm(false); // Hide confirmation
     } catch (error) {
       console.error('Submission processing error:', error);
       message.error('Failed to process submission.');
+      setShowConfirm(false); // Hide confirmation
     } finally {
       setLoading(false);
     }
@@ -244,26 +248,60 @@ const StudentDetails = () => {
       title: 'Score',
       dataIndex: 'score',
       key: 'score',
+      render: (score) => score !== null ? score : 'N/A',
     },
     {
       title: 'Feedback',
       dataIndex: 'feedback',
       key: 'feedback',
+      render: (feedback) => feedback || 'N/A',
+    },
+    {
+      title: 'Written Answer',
+      dataIndex: 'writtenAnswer', // Corrected dataIndex
+      key: 'writtenAnswer',       // Corrected key
+      render: (text) => text || 'N/A',
+    },
+    {
+      title: 'Validated by Bayesian',
+      dataIndex: 'validatedByBayesian', //Corrected dataIndex
+      key: 'validatedByBayesian', //corrected key
+      render: (validated) => validated !== null ? (validated ? <Tag color="blue">Yes</Tag> : <Tag color="default">No</Tag>) : 'N/A',
     },
     {
       title: 'Upload Images',
       key: 'uploadImages',
       render: (text, record) => (
-        <Upload
-          multiple
-          beforeUpload={() => false}
-          onChange={({ fileList }) => handleImageUpload(fileList, record.id)}
-          showUploadList={false}
+        record.submitted ? <Tag color="default">Submitted</Tag> : (
+          <Upload
+            multiple
+            beforeUpload={() => false}
+            onChange={({ fileList }) => handleImageUpload(fileList, record.id)}
+            showUploadList={false}
+          >
+            <Button loading={uploading} size="small">
+              Upload
+            </Button>
+          </Upload>
+        )
+      ),
+    },
+    {
+      title: 'Process Submission',
+      key: 'processSubmission',
+      render: (text, record) => (
+        <Button
+          type="primary"
+          onClick={() => processSubmission(record.id)}
+          disabled={!showConfirm || record.graded}
+          loading={loading}
+          style={{
+            cursor: (!showConfirm || record.graded) ? 'not-allowed' : 'pointer',
+            opacity: (!showConfirm || record.graded) ? 0.5 : 1,
+          }}
         >
-          <Button loading={uploading} size="small">
-            Upload
-          </Button>
-        </Upload>
+          Confirm
+        </Button>
       ),
     },
   ];
@@ -327,7 +365,13 @@ const StudentDetails = () => {
         </Descriptions>
 
         <Divider orientation="left">Submissions</Divider>
-        <Table columns={submissionColumns} dataSource={submissions} rowKey="id" pagination={false} loading={loading} />
+        <Table
+          columns={submissionColumns}
+          dataSource={submissions}
+          rowKey="id"
+          pagination={false}
+          loading={loading}
+        />
 
         <Divider orientation="left">Progress Report</Divider>
         <Button
