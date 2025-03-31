@@ -11,6 +11,7 @@ const AssignmentList = ({ classroomId }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const numericClassroomId = Number(classroomId);
 
   // Fetch assignments function - PRESERVED
   const fetchAssignments = async () => {
@@ -53,13 +54,17 @@ const AssignmentList = ({ classroomId }) => {
     try {
       setLoading(true);
       const values = await form.validateFields();
+
+      const studentsObj = await await axios.get(`http://localhost:8081/classrooms/${classroomId}`+'/students');
+      const students = studentsObj.data;
+      const studentIds = students.map(student => student.id);
       
       const newRubric = {
         classroomId: classroomId,
         title: values.title,
         questions: values.questions, // Added questions field
         gradingCriteria: values.gradingCriteria,
-        studentIds: []
+        studentIds: studentIds
       };
 
       const response = await axios.post('http://localhost:8082/rubrics', newRubric, {

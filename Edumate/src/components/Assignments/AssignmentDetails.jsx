@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Button, Spin, message, Upload, Modal, Tabs } from 'antd';
 import { ArrowLeftOutlined, UploadOutlined, FilePdfOutlined, FileImageOutlined } from '@ant-design/icons';
@@ -12,7 +12,7 @@ const AssignmentDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [assignment, setAssignment] = useState(null);
-  const [images, setImages] = useState([]); // state for image metadata
+  const [images, setImages] = useState([]); // image metadata
   const [loading, setLoading] = useState(true);
   const [fileList, setFileList] = useState([]);
   const [activeTab, setActiveTab] = useState('images');
@@ -20,6 +20,7 @@ const AssignmentDetails = () => {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
 
+  // Fetch assignment details and image metadata
   useEffect(() => {
     const fetchAssignment = async () => {
       try {
@@ -56,6 +57,7 @@ const AssignmentDetails = () => {
     setIsModalVisible(true);
   };
 
+  // Handle upload for both documents and images
   const handleUpload = async () => {
     try {
       setLoading(true);
@@ -66,21 +68,23 @@ const AssignmentDetails = () => {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       } else if (activeTab === 'images' && fileList.length > 0) {
+        // 1. Upload images
         const formData = new FormData();
         fileList.forEach(file => formData.append('images', file));
-        const response = await axios.put(`http://localhost:8082/rubrics/${id}/upload-images`, formData, {
+        await axios.put(`http://localhost:8082/rubrics/${id}/upload-images`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
-        setAssignment(response.data);
-        // Refresh image metadata after upload
+        // 2. Trigger backend extraction process
+        await axios.put(`http://localhost:8082/rubrics/${id}/extractPNG`);
+        // 3. Refresh image metadata
         const metaResponse = await axios.get(`http://localhost:8082/rubrics/${id}/image-metadata`);
         setImages(metaResponse.data);
       }
-      message.success('Files uploaded successfully');
+      message.success('Files uploaded and images extracted successfully');
       setIsModalVisible(false);
       setFileList([]);
     } catch (error) {
-      message.error('Failed to upload files');
+      message.error('Failed to upload files or extract images');
       console.error('Upload error:', error.response?.data || error.message);
     } finally {
       setLoading(false);
@@ -101,18 +105,19 @@ const AssignmentDetails = () => {
     }
   };
 
+  // Upload props for the Dragger component
   const uploadProps = {
     onRemove: (file) => {
       const newFileList = fileList.filter((f) => f.uid !== file.uid);
       setFileList(newFileList);
     },
     beforeUpload: (file) => {
-      let isValid = activeTab === 'documents' 
-        ? file.type === 'application/pdf' 
+      const isValid = activeTab === 'documents'
+        ? file.type === 'application/pdf'
         : file.type.startsWith('image/');
       if (!isValid) {
-        message.error(activeTab === 'documents' 
-          ? 'You can only upload PDF files for documents!' 
+        message.error(activeTab === 'documents'
+          ? 'You can only upload PDF files for documents!'
           : 'You can only upload image files!');
         return Upload.LIST_IGNORE;
       }
@@ -139,6 +144,23 @@ const AssignmentDetails = () => {
     return <UploadOutlined />;
   };
 
+  // New function: delete an image from the rubric
+  const handleDeleteImage = async (imageId) => {
+    try {
+      setLoading(true);
+      await axios.delete(`http://localhost:8082/rubrics/${id}/images/${imageId}`);
+      message.success('Image deleted successfully');
+      // Refresh metadata after deletion
+      const metaResponse = await axios.get(`http://localhost:8082/rubrics/${id}/image-metadata`);
+      setImages(metaResponse.data);
+    } catch (error) {
+      message.error('Failed to delete image');
+      console.error('Delete error:', error.response?.data || error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading && !assignment) {
     return <Spin size="large" />;
   }
@@ -163,68 +185,61 @@ const AssignmentDetails = () => {
         className="assignment-details-card"
         style={{ boxShadow: '0 4px 8px rgba(0,0,0,0.1)', borderRadius: '8px' }}
       >
-        <Tabs defaultActiveKey="1" centered>
-          <TabPane tab="Rubrics PDF" key="1">
-            <Button
-              type="primary"
-              onClick={() => showUploadModal('documents')}
-              style={{ marginBottom: 16, fontWeight: 'bold' }}
-            >
-              Upload Rubrics PDF
-            </Button>
-            {assignment.documents?.length > 0 ? (
-              <ul style={{ margin: 0 }}>
-                {assignment.documents.map((doc, index) => (
-                  <li key={doc.id} style={{ marginBottom: '8px' }}>
-                    <a
-                      href={`http://localhost:8082/rubrics/${id}/documents/${doc.id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ textDecoration: 'none', color: '#1890ff' }}
-                    >
-                      <FilePdfOutlined /> {doc.name || `Document ${index + 1}`}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              'No rubrics PDF uploaded'
-            )}
-          </TabPane>
+   <Tabs defaultActiveKey="1" centered>
+  <TabPane tab="Rubrics" key="1">
+    <div style={{ marginBottom: 16 }}>
+      <Button
+        type="primary"
+        onClick={() => showUploadModal('documents')}
+        style={{ fontWeight: 'bold', marginRight: 12 }}
+      >
+        Upload PDF
+      </Button>
 
-          <TabPane tab="Rubrics Images" key="2">
-            <Button
-              type="primary"
-              onClick={() => showUploadModal('images')}
-              style={{ marginBottom: 16, marginRight: 16, fontWeight: 'bold' }}
+      <Button
+        type="primary"
+        onClick={() => showUploadModal('images')}
+        style={{ fontWeight: 'bold' }}
+      >
+        Upload Images
+      </Button>
+    </div>
+
+    {images.length > 0 ? (
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+        {images.map((img, index) => (
+          <div key={img.id} style={{ position: 'relative' }}>
+            <a
+              href={`http://localhost:8082/rubrics/${id}/images/${img.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: 'inline-block' }}
             >
-              Upload Rubrics Images
+              <img
+                src={`http://localhost:8082/rubrics/${id}/images/${img.id}`}
+                alt={`Image ${index + 1}`}
+                width={100}
+                style={{ border: '1px solid #ccc', borderRadius: '4px' }}
+              />
+            </a>
+            <Button 
+              type="primary" 
+              danger 
+              size="small" 
+              style={{ position: 'absolute', top: '5px', right: '5px' }}
+              onClick={() => handleDeleteImage(img.id)}
+            >
+              Delete
             </Button>
-            {images.length > 0 ? (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                {images.map((img, index) => (
-                  <div key={img.id} style={{ cursor: 'pointer' }}>
-                    <a
-                      href={`http://localhost:8082/rubrics/${id}/images/${img.id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ display: 'inline-block' }}
-                    >
-                      <img
-                        src={`http://localhost:8082/rubrics/${id}/images/${img.id}`}
-                        alt={`Image ${index + 1}`}
-                        width={100}
-                        style={{ border: '1px solid #ccc', borderRadius: '4px' }}
-                      />
-                    </a>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              'No rubrics images uploaded'
-            )}
-          </TabPane>
-        </Tabs>
+          </div>
+        ))}
+      </div>
+    ) : (
+      'No rubrics uploaded'
+    )}
+  </TabPane>
+</Tabs>
+
       </Card>
 
       <Modal
