@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Button, Spin, message, Descriptions, Upload, Modal, Image, Tabs, Divider } from 'antd';
+import { Card, Button, Spin, message, Upload, Modal, Tabs } from 'antd';
 import { ArrowLeftOutlined, UploadOutlined, FilePdfOutlined, FileImageOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import './AssignmentDetails.css';
@@ -12,6 +12,7 @@ const AssignmentDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [assignment, setAssignment] = useState(null);
+  const [images, setImages] = useState([]); // state for image metadata
   const [loading, setLoading] = useState(true);
   const [fileList, setFileList] = useState([]);
   const [activeTab, setActiveTab] = useState('images');
@@ -27,13 +28,23 @@ const AssignmentDetails = () => {
         setAssignment(response.data);
       } catch (error) {
         message.error('Failed to load assignment details');
-        console.error('Error:', error.response?.data || error.message);
+        console.error('Assignment error:', error.response?.data || error.message);
       } finally {
         setLoading(false);
       }
     };
 
+    const fetchImageMetadata = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8082/rubrics/${id}/image-metadata`);
+        setImages(response.data);
+      } catch (error) {
+        console.error('Image metadata error:', error.response?.data || error.message);
+      }
+    };
+
     fetchAssignment();
+    fetchImageMetadata();
   }, [id]);
 
   const handleBack = () => {
@@ -48,81 +59,29 @@ const AssignmentDetails = () => {
   const handleUpload = async () => {
     try {
       setLoading(true);
-      
       if (activeTab === 'documents' && fileList.length > 0) {
-        // Handle PDF upload
         const formData = new FormData();
-        fileList.forEach(file => {
-          formData.append('document', file);
-        });
-
+        fileList.forEach(file => formData.append('document', file));
         await axios.put(`http://localhost:8082/rubrics/${id}/upload-documents`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+          headers: { 'Content-Type': 'multipart/form-data' }
         });
-      } 
-      else if (activeTab === 'images' && fileList.length > 0) {
-        // Handle image upload
+      } else if (activeTab === 'images' && fileList.length > 0) {
         const formData = new FormData();
-        fileList.forEach(file => {
-          formData.append('images', file);
-        });
-
+        fileList.forEach(file => formData.append('images', file));
         const response = await axios.put(`http://localhost:8082/rubrics/${id}/upload-images`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+          headers: { 'Content-Type': 'multipart/form-data' }
         });
         setAssignment(response.data);
+        // Refresh image metadata after upload
+        const metaResponse = await axios.get(`http://localhost:8082/rubrics/${id}/image-metadata`);
+        setImages(metaResponse.data);
       }
-      else if (activeTab === 'questionImages' && fileList.length > 0) {
-        // Handle question image upload
-        const formData = new FormData();
-        fileList.forEach(file => {
-          formData.append('questionImages', file);
-        });
-
-        const response = await axios.put(`http://localhost:8082/rubrics/${id}/upload-question-images`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-        setAssignment(response.data);
-      }
-
-      // Refresh assignment data
-      const response = await axios.get(`http://localhost:8082/rubrics/${id}`);
-      setAssignment(response.data);
-      
       message.success('Files uploaded successfully');
       setIsModalVisible(false);
       setFileList([]);
     } catch (error) {
       message.error('Failed to upload files');
       console.error('Upload error:', error.response?.data || error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleExtract = async (type) => {
-    try {
-      setLoading(true);
-      let endpoint = '';
-      
-      if (type === 'answers') {
-        endpoint = `extractPNG`;
-      } else if (type === 'questions') {
-        endpoint = `extract-question-png`;
-      }
-
-      const response = await axios.put(`http://localhost:8082/rubrics/${id}/${endpoint}`);
-      setAssignment(response.data);
-      message.success(`Successfully extracted ${type}`);
-    } catch (error) {
-      message.error(`Failed to extract ${type}`);
-      console.error('Extraction error:', error.response?.data || error.message);
     } finally {
       setLoading(false);
     }
@@ -144,31 +103,25 @@ const AssignmentDetails = () => {
 
   const uploadProps = {
     onRemove: (file) => {
-      const index = fileList.indexOf(file);
-      const newFileList = fileList.slice();
-      newFileList.splice(index, 1);
+      const newFileList = fileList.filter((f) => f.uid !== file.uid);
       setFileList(newFileList);
     },
     beforeUpload: (file) => {
-      let isValid = false;
-      
-      if (activeTab === 'documents') {
-        isValid = file.type === 'application/pdf';
-        if (!isValid) message.error('You can only upload PDF files for documents!');
-      } else {
-        isValid = file.type.startsWith('image/');
-        if (!isValid) message.error('You can only upload image files!');
+      let isValid = activeTab === 'documents' 
+        ? file.type === 'application/pdf' 
+        : file.type.startsWith('image/');
+      if (!isValid) {
+        message.error(activeTab === 'documents' 
+          ? 'You can only upload PDF files for documents!' 
+          : 'You can only upload image files!');
+        return Upload.LIST_IGNORE;
       }
-      
       const isLt5M = file.size / 1024 / 1024 < 5;
       if (!isLt5M) {
         message.error('File must be smaller than 5MB!');
         return Upload.LIST_IGNORE;
       }
-      
-      if (isValid) {
-        setFileList([...fileList, file]);
-      }
+      setFileList([...fileList, file]);
       return false;
     },
     fileList,
@@ -189,148 +142,110 @@ const AssignmentDetails = () => {
   if (loading && !assignment) {
     return <Spin size="large" />;
   }
-
   if (!assignment) {
     return <div>Assignment not found</div>;
   }
 
   return (
     <div className="assignment-details-container">
-      <Button 
-        type="text" 
-        icon={<ArrowLeftOutlined />} 
+      <Button
+        type="text"
+        icon={<ArrowLeftOutlined />}
         onClick={handleBack}
         className="back-button"
+        style={{ fontWeight: 'bold', fontSize: '16px', padding: '10px 20px' }}
       >
         Back to Assignments
       </Button>
-      
-      <Card 
-        title={assignment.title} 
-        className="assignment-details-card"
-      >
-        <Tabs defaultActiveKey="1">
-          <TabPane tab="Questions & Criteria" key="1">
-            <Descriptions bordered column={1}>
-              <Descriptions.Item label="Questions">
-                <div style={{ whiteSpace: 'pre-line' }}>{assignment.questions}</div>
-              </Descriptions.Item>
-              <Descriptions.Item label="Grading Criteria">
-                <div style={{ whiteSpace: 'pre-line' }}>{assignment.gradingCriteria}</div>
-              </Descriptions.Item>
-            </Descriptions>
-          </TabPane>
 
-          <TabPane tab="Documents" key="2">
-            <Button 
-              type="primary" 
+      <Card
+        title={assignment.title}
+        className="assignment-details-card"
+        style={{ boxShadow: '0 4px 8px rgba(0,0,0,0.1)', borderRadius: '8px' }}
+      >
+        <Tabs defaultActiveKey="1" centered>
+          <TabPane tab="Rubrics PDF" key="1">
+            <Button
+              type="primary"
               onClick={() => showUploadModal('documents')}
-              style={{ marginBottom: 16 }}
+              style={{ marginBottom: 16, fontWeight: 'bold' }}
             >
-              Upload Documents
+              Upload Rubrics PDF
             </Button>
             {assignment.documents?.length > 0 ? (
               <ul style={{ margin: 0 }}>
                 {assignment.documents.map((doc, index) => (
-                  <li key={`doc-${index}`}>
-                    <a 
-                      href={`http://localhost:8082/rubrics/${id}/documents/${doc.id}`} 
-                      target="_blank" 
+                  <li key={doc.id} style={{ marginBottom: '8px' }}>
+                    <a
+                      href={`http://localhost:8082/rubrics/${id}/documents/${doc.id}`}
+                      target="_blank"
                       rel="noopener noreferrer"
+                      style={{ textDecoration: 'none', color: '#1890ff' }}
                     >
                       <FilePdfOutlined /> {doc.name || `Document ${index + 1}`}
                     </a>
                   </li>
                 ))}
               </ul>
-            ) : 'No documents uploaded'}
+            ) : (
+              'No rubrics PDF uploaded'
+            )}
           </TabPane>
 
-          <TabPane tab="Answer Images" key="3">
-            <Button 
-              type="primary" 
+          <TabPane tab="Rubrics Images" key="2">
+            <Button
+              type="primary"
               onClick={() => showUploadModal('images')}
-              style={{ marginBottom: 16, marginRight: 16 }}
+              style={{ marginBottom: 16, marginRight: 16, fontWeight: 'bold' }}
             >
-              Upload Answer Images
+              Upload Rubrics Images
             </Button>
-            <Button 
-              type="default"
-              onClick={() => handleExtract('answers')}
-              style={{ marginBottom: 16 }}
-              disabled={!assignment.images?.length}
-            >
-              Extract Answers
-            </Button>
-            {assignment.images?.length > 0 ? (
+            {images.length > 0 ? (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                {assignment.images.map((img, index) => (
-                  <div key={`img-${index}`} style={{ cursor: 'pointer' }}>
-                    <Image
-                      width={100}
-                      src={`http://localhost:8082/rubrics/${id}/images/${img.id}`}
-                      alt={img.name || `Image ${index + 1}`}
-                      preview={{
-                        src: `http://localhost:8082/rubrics/${id}/images/${img.id}`
-                      }}
-                    />
+                {images.map((img, index) => (
+                  <div key={img.id} style={{ cursor: 'pointer' }}>
+                    <a
+                      href={`http://localhost:8082/rubrics/${id}/images/${img.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ display: 'inline-block' }}
+                    >
+                      <img
+                        src={`http://localhost:8082/rubrics/${id}/images/${img.id}`}
+                        alt={`Image ${index + 1}`}
+                        width={100}
+                        style={{ border: '1px solid #ccc', borderRadius: '4px' }}
+                      />
+                    </a>
                   </div>
                 ))}
               </div>
-            ) : 'No answer images uploaded'}
-          </TabPane>
-
-          <TabPane tab="Question Images" key="4">
-            <Button 
-              type="primary" 
-              onClick={() => showUploadModal('questionImages')}
-              style={{ marginBottom: 16, marginRight: 16 }}
-            >
-              Upload Question Images
-            </Button>
-            <Button 
-              type="default"
-              onClick={() => handleExtract('questions')}
-              style={{ marginBottom: 16 }}
-              disabled={!assignment.questionImages?.length}
-            >
-              Extract Questions
-            </Button>
-            {assignment.questionImages?.length > 0 ? (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                {assignment.questionImages.map((img, index) => (
-                  <div key={`qimg-${index}`} style={{ cursor: 'pointer' }}>
-                    <Image
-                      width={100}
-                      src={`http://localhost:8082/rubrics/${id}/question-images/${img.id}`}
-                      alt={img.name || `Question Image ${index + 1}`}
-                      preview={{
-                        src: `http://localhost:8082/rubrics/${id}/question-images/${img.id}`
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
-            ) : 'No question images uploaded'}
+            ) : (
+              'No rubrics images uploaded'
+            )}
           </TabPane>
         </Tabs>
       </Card>
 
       <Modal
-        title={`Upload ${activeTab === 'documents' ? 'Documents' : activeTab === 'questionImages' ? 'Question Images' : 'Answer Images'}`}
+        title={`Upload ${activeTab === 'documents' ? 'Rubrics PDF' : 'Rubrics Images'}`}
         open={isModalVisible}
         onOk={handleUpload}
         onCancel={handleCancel}
         confirmLoading={loading}
         width={700}
+        bodyStyle={{ padding: '20px' }}
       >
-        <Dragger {...uploadProps}>
+        <Dragger
+          {...uploadProps}
+          style={{ padding: '20px', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}
+        >
           <p className="ant-upload-drag-icon">
             <UploadOutlined />
           </p>
           <p className="ant-upload-text">Click or drag files to this area to upload</p>
           <p className="ant-upload-hint">
-            {activeTab === 'documents' 
+            {activeTab === 'documents'
               ? 'Supports PDF files only. Max 5MB per file.'
               : 'Supports JPG or PNG files only. Max 5MB per file.'}
           </p>
@@ -350,8 +265,9 @@ const AssignmentDetails = () => {
         open={previewVisible}
         footer={null}
         onCancel={() => setPreviewVisible(false)}
+        style={{ maxWidth: '90%' }}
       >
-        <img alt="preview" style={{ width: '100%' }} src={previewImage} />
+        <img alt="preview" style={{ width: '100%', borderRadius: '8px' }} src={previewImage} />
       </Modal>
     </div>
   );
