@@ -54,38 +54,68 @@ const AssignmentList = ({ classroomId }) => {
     try {
       setLoading(true);
       const values = await form.validateFields();
-
-      const studentsObj = await await axios.get(`http://localhost:8081/classrooms/${classroomId}`+'/students');
+  
+      // 1. Fetch all students in the classroom
+      const studentsObj = await axios.get(
+        `http://localhost:8081/classrooms/${classroomId}/students`
+      );
       const students = studentsObj.data;
-      const studentIds = students.map(student => student.id);
-      
+      const studentIds = students.map((student) => student.id);
+  
+      // 2. Create the new rubric (assignment)
       const newRubric = {
         classroomId: classroomId,
         title: values.title,
-        questions: values.questions, // Added questions field
+        questions: values.questions, // from your form
         gradingCriteria: values.gradingCriteria,
-        studentIds: studentIds
+        studentIds: studentIds,
       };
-
-      const response = await axios.post('http://localhost:8082/rubrics', newRubric, {
+  
+      const rubricResponse = await axios.post('http://localhost:8082/rubrics', newRubric, {
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
-
-      // Refresh the list after creation
+  
+      // 3. Grab the newly created rubric's ID
+      const newRubricId = rubricResponse.data.id;
+  
+      // 4. For each student, create a submission object
+      //    using the required format
+      const submissionPromises = studentIds.map(async (sId) => {
+        const submissionData = {
+          studentId: sId,
+          classroomId: Number(classroomId),
+          markingRubric: { id: newRubricId },
+          writtenAnswer: '',
+          score: 0.0,
+          feedback: '',
+          validatedByBayesian: false,
+        };
+        return axios.post('http://localhost:8082/submissions', submissionData, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      });
+  
+      // 5. Execute all submission creations in parallel
+      await Promise.all(submissionPromises);
+  
+      // 6. Refresh the list after creation
       await fetchAssignments();
-
-      message.success('Assignment created successfully');
+  
+      message.success('Assignment and submissions created successfully!');
       form.resetFields();
       setIsModalVisible(false);
     } catch (error) {
-      message.error('Failed to create assignment');
+      message.error('Failed to create assignment and submissions');
       console.error('Creation error:', error.response?.data || error.message);
     } finally {
       setLoading(false);
     }
   };
+  
 
   // Updated columns to include questions
   const columns = [
