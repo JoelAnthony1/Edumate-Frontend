@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Table, Space, Button, Empty, Modal, Form, Input, message, Spin, Alert } from 'antd';
 import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
@@ -16,6 +16,7 @@ const StudentList = ({ classroomId }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const hasShownMessage = useRef(false);
   console.log('StudentList received classroomId:', classroomId);
   // Enhanced mock data with more details
   const mockStudents = [
@@ -79,7 +80,10 @@ const StudentList = ({ classroomId }) => {
       console.log('Processed students:', students);
       
       setData(students);
-      message.success('Students loaded successfully');
+      if (!hasShownMessage.current) {
+        message.success('Students loaded successfully');
+        hasShownMessage.current = true;
+      }
       
     } catch (error) {
       console.error('Full error details:', {
@@ -347,7 +351,7 @@ const StudentList = ({ classroomId }) => {
       )}
       
       <div className="student-list-header">
-        <h3>Students in Classroom {classroomId}</h3>
+        <h3>Students in this classroom</h3>
         <Button 
           type="primary" 
           icon={<PlusOutlined />}

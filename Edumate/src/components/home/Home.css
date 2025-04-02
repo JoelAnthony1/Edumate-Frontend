@@ -33,9 +33,17 @@
 }
 
 .title-dash h5 {
-    font-size: 28px;
+    font-size: 48px;
     font-family: "Inter", sans-serif;
     margin-bottom: 0 !important;
+    text-shadow: 
+    1px 0px 1px #000, 0px 1px 1px #111, 
+    2px 1px 1px #000, 1px 2px 1px #111,
+    3px 2px 1px #000, 2px 3px 1px #111,
+    4px 3px 1px #000, 3px 4px 1px #111,
+    5px 4px 1px #000, 4px 5px 1px #111,
+    6px 5px 1px #000, 5px 6px 1px #111,
+    7px 6px 1px #000;
 }
 
 .content-wrapper {

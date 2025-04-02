@@ -98,7 +98,7 @@ const CourseTable = () => {
   const columns = [
     { title: "ID", dataIndex: "id", key: "id" },
     {
-      title: "Class Name",
+      title: "Class Name (Click on class name to enter)",
       dataIndex: "title",
       key: "classname",
       render: (text, record) => {
