@@ -175,7 +175,7 @@
             });
             analysisId = createRes.data.id;
           } else {
-            throw error; // Something else went wrong
+            throw error;
           }
         }
     
@@ -190,28 +190,45 @@
         await axios.put(`http://localhost:8082/submissions/${submissionId}/mark-graded`);
     
         // Step 6: Refresh submission list
-        const updatedSubmissions = await axios.get(
+        const updatedSubmissionsRes = await axios.get(
           `http://localhost:8082/submissions/classrooms/${classroomId}/students/${studentId}`
         );
-        setSubmissions(updatedSubmissions.data);
+        let updatedSubmissions = updatedSubmissionsRes.data;
+
+    // Find the processed submission and get its rubric id
+    const processedSubmission = updatedSubmissions.find(sub => sub.id === submissionId);
+    const markingRubricId = processedSubmission.markingRubric.id;
+
+    // Step 7: Call the feedback endpoint using the rubric id
+    const feedbackRes = await axios.get(`http://localhost:8082/submissions/feedback`, {
+      params: {
+        studentId,
+        classroomId,
+        markingRubricId,
+      },
+    });
+    const feedback = feedbackRes.data; // assuming feedback is a simple string
+
+    // Merge feedback into the processed submission
+    updatedSubmissions = updatedSubmissions.map(submission =>
+      submission.id === submissionId ? { ...submission, feedback } : submission
+    );
+
+    setSubmissions(updatedSubmissions);
+
+    // Step 8: Show feedback as a success message
+    message.success(`Feedback: ${feedback}`);
+    setShowConfirm(false);
+  } catch (error) {
+    console.error('Submission processing error:', error);
+    message.error('Failed to process submission.');
+    setShowConfirm(false);
+  } finally {
+    setLoading(false);
+  }
+};
     
-        // Step 7: Show feedback (from updated submission)
-        const feedback = `Score: ${gradedSubmission.score ?? 'N/A'} | Written Answer: ${
-          gradedSubmission.writtenAnswer || 'No written answer provided.'
-        }`;
-        message.success(feedback);      
-        setShowConfirm(false);
-    
-      } catch (error) {
-        console.error('Submission processing error:', error);
-        message.error('Failed to process submission.');
-        setShowConfirm(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    
+  
 
     const submissionColumns = [
       {
@@ -223,13 +240,15 @@
         title: 'Submitted',
         dataIndex: 'submitted',
         key: 'submitted',
-        render: (submitted) => submitted ? <Tag color="green">Yes</Tag> : <Tag color="red">No</Tag>,
+        render: (submitted) =>
+          submitted ? <Tag color="green">Yes</Tag> : <Tag color="red">No</Tag>,
       },
       {
         title: 'Graded',
         dataIndex: 'graded',
         key: 'graded',
-        render: (graded) => graded ? <Tag color="green">Yes</Tag> : <Tag color="orange">No</Tag>,
+        render: (graded) =>
+          graded ? <Tag color="green">Yes</Tag> : <Tag color="orange">No</Tag>,
       },
       {
         title: 'Score',
@@ -242,6 +261,12 @@
         dataIndex: 'writtenAnswer',
         key: 'writtenAnswer',
         render: (text) => text || 'N/A',
+      },
+      {
+        title: 'Feedback',
+        dataIndex: 'feedback',
+        key: 'feedback',
+        render: (feedback) => feedback || 'N/A',
       },
       {
         title: 'Upload Images',
@@ -279,6 +304,7 @@
         ),
       },
     ];
+    
 
     const rubricColumns = [
       {
