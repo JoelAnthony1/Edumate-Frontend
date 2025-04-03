@@ -242,17 +242,17 @@ const StudentDetails = () => {
       key: 'markingRubricTitle',
     },
     {
-      title: 'Submitted',
-      dataIndex: 'submitted',
-      key: 'submitted',
-      render: (submitted) =>
-        submitted ? <Tag color="green">Yes</Tag> : <Tag color="red">No</Tag>,
-    },
-    {
-      title: 'Graded',
-      dataIndex: 'graded',
-      key: 'graded',
-      render: (graded) => graded ? <Tag color="green">Yes</Tag> : <Tag color="red">No</Tag>,
+      title: 'Submitted & Graded',
+      key: 'status',
+      width: 120,
+      render: (_, record) => {
+        const isComplete = record.submitted && record.graded;
+        return (
+          <Tag color={isComplete ? 'green' : 'red'}>
+            {isComplete ? 'Yes' : 'No'}
+          </Tag>
+        );
+      },
     },
     {
       title: 'Score (%)',

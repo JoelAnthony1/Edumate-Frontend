@@ -299,11 +299,6 @@ const StudentList = ({ classroomId }) => {
       className: 'student-name-column',
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
-    },
-    {
       title: 'Actions',
       key: 'actions',
       render: (_, record) => (
