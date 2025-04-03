@@ -1,9 +1,14 @@
-.assignment-detail-container {
+.assignment-details-container {
+  background: #cbe3ef;
   padding: 20px;
+  min-height: calc(100vh - 40px);
 }
 
-.assignment-detail-card {
-  margin-top: 20px;
+.assignment-details-card {
+  border-radius: 20px !important;
+  -webkit-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.5) !important;
+  -moz-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.5) !important;
 }
 
 .back-button {

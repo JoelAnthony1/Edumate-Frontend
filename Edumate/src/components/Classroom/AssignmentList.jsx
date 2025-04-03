@@ -10,6 +10,9 @@ const AssignmentList = ({ classroomId }) => {
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
+  const [criteriaModalVisible, setCriteriaModalVisible] = useState(false);
+  const [selectedCriteria, setSelectedCriteria] = useState('');
+
   const navigate = useNavigate();
   const numericClassroomId = Number(classroomId);
 
@@ -18,7 +21,7 @@ const AssignmentList = ({ classroomId }) => {
     try {
       setLoading(true);
       const response = await axios.get(`http://localhost:8082/rubrics/classrooms/${classroomId}`);
-      
+
       setAssignments(response.data.map(assignment => ({
         id: assignment.id,
         title: assignment.title,
@@ -54,14 +57,14 @@ const AssignmentList = ({ classroomId }) => {
     try {
       setLoading(true);
       const values = await form.validateFields();
-  
+
       // 1. Fetch all students in the classroom
       const studentsObj = await axios.get(
         `http://localhost:8081/classrooms/${classroomId}/students`
       );
       const students = studentsObj.data;
       const studentIds = students.map((student) => student.id);
-  
+
       // 2. Create the new rubric (assignment)
       const newRubric = {
         classroomId: classroomId,
@@ -70,16 +73,16 @@ const AssignmentList = ({ classroomId }) => {
         gradingCriteria: values.gradingCriteria,
         studentIds: studentIds,
       };
-  
+
       const rubricResponse = await axios.post('http://localhost:8082/rubrics', newRubric, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
-  
+
       // 3. Grab the newly created rubric's ID
       const newRubricId = rubricResponse.data.id;
-  
+
       // 4. For each student, create a submission object
       //    using the required format
       const submissionPromises = studentIds.map(async (sId) => {
@@ -98,13 +101,13 @@ const AssignmentList = ({ classroomId }) => {
           },
         });
       });
-  
+
       // 5. Execute all submission creations in parallel
       await Promise.all(submissionPromises);
-  
+
       // 6. Refresh the list after creation
       await fetchAssignments();
-  
+
       message.success('Assignment and submissions created successfully!');
       form.resetFields();
       setIsModalVisible(false);
@@ -115,7 +118,7 @@ const AssignmentList = ({ classroomId }) => {
       setLoading(false);
     }
   };
-  
+
 
   // Updated columns to include questions
   const columns = [
@@ -125,16 +128,35 @@ const AssignmentList = ({ classroomId }) => {
       key: 'title',
     },
     {
-      title: 'Questions',
-      dataIndex: 'questions',
-      key: 'questions',
-      render: text => <span style={{ whiteSpace: 'pre-line' }}>{text}</span>
-    },
-    {
       title: 'Grading Criteria',
       dataIndex: 'gradingCriteria',
       key: 'gradingCriteria',
-      render: text => <span style={{ whiteSpace: 'pre-line' }}>{text}</span>
+      render: text => {
+        const maxWords = 30;
+        const words = text.split(' ');
+        const shortText = words.length > maxWords
+          ? words.slice(0, maxWords).join(' ') + '...'
+          : text;
+
+        return (
+          <div style={{ whiteSpace: 'pre-line' }}>
+            {shortText}
+            {words.length > maxWords && (
+              <div style={{ marginTop: 20 }}>
+                <Button
+                  type="link"
+                  onClick={() => {
+                    setSelectedCriteria(text);
+                    setCriteriaModalVisible(true);
+                  }}
+                >
+                  Read More
+                </Button>
+              </div>
+            )}
+          </div>
+        );
+      }
     },
     {
       title: 'Attachments',
@@ -147,8 +169,8 @@ const AssignmentList = ({ classroomId }) => {
       key: 'actions',
       render: (_, record) => (
         <Space size="middle">
-          <Button 
-            type="link" 
+          <Button
+            type="link"
             onClick={() => navigate(`/assignments/${record.id}`)}
           >
             View/Edit
@@ -161,8 +183,8 @@ const AssignmentList = ({ classroomId }) => {
   return (
     <div className="assignment-list-container">
       <div className="assignment-list-header">
-        <Button 
-          type="primary" 
+        <Button
+          type="primary"
           icon={<PlusOutlined />}
           onClick={showModal}
           style={{ marginBottom: 16 }}
@@ -170,7 +192,7 @@ const AssignmentList = ({ classroomId }) => {
           Add Assignment
         </Button>
       </div>
-      
+
       <Table
         columns={columns}
         dataSource={assignments}
@@ -197,6 +219,17 @@ const AssignmentList = ({ classroomId }) => {
           </Form.Item>
 
         </Form>
+      </Modal>
+
+      <Modal
+        title="Full Grading Criteria"
+        open={criteriaModalVisible}
+        onCancel={() => setCriteriaModalVisible(false)}
+        footer={null}
+        width="80%"
+        style={{ top: 50 }}
+      >
+        <p style={{ whiteSpace: 'pre-line' }}>{selectedCriteria}</p>
       </Modal>
     </div>
   );

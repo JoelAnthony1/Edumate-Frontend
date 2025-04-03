@@ -115,7 +115,9 @@
     };
 
     const handleBack = () => {
-      navigate(-1);
+      // setActiveTab('students');
+      // navigate(-1);
+      navigate(`/classrooms/${classroomId}`, { state: { activeTab: 'students' } });
     };
 
     const showRubricDetails = (rubric) => {
@@ -232,7 +234,7 @@
 
     const submissionColumns = [
       {
-        title: 'Rubric Title',
+        title: 'Assignment Title',
         dataIndex: ['markingRubric', 'title'],
         key: 'markingRubricTitle',
       },
@@ -247,8 +249,7 @@
         title: 'Graded',
         dataIndex: 'graded',
         key: 'graded',
-        render: (graded) =>
-          graded ? <Tag color="green">Yes</Tag> : <Tag color="orange">No</Tag>,
+        render: (graded) => graded ? <Tag color="green">Yes</Tag> : <Tag color="red">No</Tag>,
       },
       {
         title: 'Score',

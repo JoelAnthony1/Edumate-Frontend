@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Tabs, Card, Spin, message, Button } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import axios from 'axios';
@@ -10,10 +10,20 @@ import './ClassroomDetails.css';
 const ClassroomDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation(); // <-- get location.state
   const [classroom, setClassroom] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('assignments');
+  const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'assignments');
   console.log('ClassroomDetail ID from route:', id);
+
+  // 👇 Add this useEffect right here
+  useEffect(() => {
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+      navigate(location.pathname, { replace: true }); // Clear the state after using it
+    }
+  }, [location.state, location.pathname, navigate]);
+
   useEffect(() => {
     const fetchClassroom = async () => {
       try {
@@ -57,16 +67,16 @@ const ClassroomDetail = () => {
 
   return (
     <div className="classroom-detail-container">
-      <Button 
-        type="text" 
-        icon={<ArrowLeftOutlined />} 
+      <Button
+        type="text"
+        icon={<ArrowLeftOutlined />}
         onClick={handleBack}
         className="back-button"
       >
         Back to Classrooms
       </Button>
-      <Card 
-        title={classroom.classname} 
+      <Card
+        title={"Classroom Name: " + classroom.classname}
         className="classroom-detail-card"
       >
         <Tabs
