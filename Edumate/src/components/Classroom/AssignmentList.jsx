@@ -132,7 +132,7 @@ const AssignmentList = ({ classroomId }) => {
       dataIndex: 'gradingCriteria',
       key: 'gradingCriteria',
       render: text => {
-        const maxWords = 30;
+        const maxWords = 20;
         const words = text.split(' ');
         const shortText = words.length > maxWords
           ? words.slice(0, maxWords).join(' ') + '...'
