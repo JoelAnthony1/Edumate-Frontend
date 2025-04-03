@@ -132,7 +132,7 @@ const AssignmentList = ({ classroomId }) => {
       dataIndex: 'gradingCriteria',
       key: 'gradingCriteria',
       render: text => {
-        const maxWords = 30;
+        const maxWords = 20;
         // Check if text is null or undefined
         if (!text) {
           return 'No grading criteria provided.';
