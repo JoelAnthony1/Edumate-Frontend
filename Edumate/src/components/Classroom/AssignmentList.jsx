@@ -133,6 +133,10 @@ const AssignmentList = ({ classroomId }) => {
       key: 'gradingCriteria',
       render: text => {
         const maxWords = 30;
+        // Check if text is null or undefined
+        if (!text) {
+          return 'No grading criteria provided.';
+        }
         const words = text.split(' ');
         const shortText = words.length > maxWords
           ? words.slice(0, maxWords).join(' ') + '...'
