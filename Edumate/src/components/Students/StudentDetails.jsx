@@ -222,7 +222,7 @@ const StudentDetails = () => {
       setSubmissions(updatedSubmissions);
 
       // Step 8: Show feedback as a success message
-      message.success(`Feedback: ${feedback}`);
+      message.success(`Feedback successfully generated`);
       setShowConfirm(false);
     } catch (error) {
       console.error('Submission processing error:', error);
@@ -255,10 +255,13 @@ const StudentDetails = () => {
       render: (graded) => graded ? <Tag color="green">Yes</Tag> : <Tag color="red">No</Tag>,
     },
     {
-      title: 'Score',
+      title: 'Score (%)',
       dataIndex: 'score',
       key: 'score',
-      render: (score) => (score !== null ? score : 'N/A'),
+      render: (score) => {
+        if (score === null || score === undefined) return 'N/A';
+        return parseFloat(score).toFixed(2);
+      },
     },
     {
       title: 'Written Answer',
@@ -392,6 +395,9 @@ const StudentDetails = () => {
     return (
       <div className="loading-container">
         <Spin size="large" tip="Loading student data..." />
+        <p style={{ marginTop: 16, textAlign: 'center', fontStyle: 'italic' }}>
+          AI is extracting information...
+        </p>
       </div>
     );
   }
