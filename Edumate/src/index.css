@@ -115,3 +115,12 @@ span.ant-input-password {
 .ant-table-cell-row-hover {
     background: #dedede !important;
 }
+
+.ant-card-head-title {
+    font-size: 22px;
+    font-family: "Poppins", sans-serif;
+}
+
+.ant-card-head {
+    padding: 20px 34px !important;
+}
