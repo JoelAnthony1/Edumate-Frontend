@@ -34,7 +34,7 @@ const CreateClassroom = () => {
         <Input.TextArea placeholder="Description" />
       </Form.Item>
       <Form.Item>
-        <Button style={{ backgroundColor: "#003A8C", borderRadius: "1px" }} type="primary" htmlType="submit">
+        <Button type="primary" htmlType="submit">
           Create
         </Button>
       </Form.Item>

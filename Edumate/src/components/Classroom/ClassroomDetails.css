@@ -1,5 +1,5 @@
 .classroom-detail-container {
-  background: #cbe3ef;
+  background: var(--bgblue);
   padding: 20px;
   min-height: calc(100vh - 40px);
 }
@@ -11,11 +11,10 @@
 
 .classroom-detail-card {
   border-radius: 20px;
-  -webkit-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.5);
-  box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 10px 10px 10px 0px var(--black);
+  -moz-box-shadow: 10px 10px 10px 0px var(--black);
+  box-shadow: 10px 10px 10px 0px var(--black);
 }
-
 
 .classroom-tabs .ant-tabs-nav {
   margin-bottom: 0;
@@ -26,10 +25,6 @@
   font-size: 16px;
 }
 
-.ant-tabs .ant-tabs-tab:hover {
-  color: #5aa8d6;
-}
-
 .classroom-tabs .ant-tabs-content {
   padding: 16px;
 }
@@ -38,15 +33,15 @@
   font-weight: 600;
 }
 
-.ant-tabs .ant-tabs-tab .ant-tabs-tab-btn:hover {
-  color: #5aa8d6;
+.ant-tabs .ant-tabs-tab .ant-tabs-tab-btn:hover, .ant-tabs .ant-tabs-tab:hover {
+  color: var(--lightblue);
 }
 
 .ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-  color: #5aa8d6;
+  color: var(--lightblue);;
   text-shadow: 0 0 0.25px currentcolor;
 }
 
 .ant-tabs .ant-tabs-ink-bar {
-  background: #5aa8d6;
+  background: var(--lightblue);
 }

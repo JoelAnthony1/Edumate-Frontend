@@ -1,11 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap"');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 * {
-    font-family: "Open Sans", sans-serif;
+    font-family: "Atkinson Hyperlegible", sans-serif;
     margin: 0px;
     padding: 0px;
+    font-size: 16px;
+    --bgblue: #102336;
+    --headerblue: #1B3B5B;
+    --white: #ffffff;
+    --black: #000000;
+    --lightblue: #26b9e7;
+    --yellow: #fae900;
 }
 
 div.loading-container {
@@ -22,20 +30,20 @@ div.loading-container {
     justify-content: center;
     align-items: center;
     height: 150px !important;
-    -webkit-box-shadow: 0px 8px 10px 0px rgba(0, 0, 0, 0.5);
-    -moz-box-shadow: 0px 8px 10px 0px rgba(0, 0, 0, 0.5);
-    box-shadow: 0px 8px 10px 0px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0px 8px 10px 0px var(--black);
+    -moz-box-shadow: 0px 8px 10px 0px var(--black);
+    box-shadow: 0px 8px 10px 0px var(--black);
 }
 
 button.ant-btn {
     padding: 1rem;
     border-radius: 20px !important;
-    color: #ffffff !important;
-    background-color: #5aa8d6 !important;
+    color: var(--white) !important;
+    background-color: var(--lightblue) !important;
 }
 
 button.ant-btn:hover {
-    background-color: #3a4163 !important;
+    background-color: var(--headerblue) !important;
 
 }
 
@@ -45,7 +53,7 @@ button.ant-btn:hover {
 }
 
 .ant-form-item-control-input-content span {
-    font-weight: 700;
+    font-weight: 500;
 }
 
 .ant-form-item-control-input-content input,
@@ -60,22 +68,22 @@ button.ant-btn:hover {
 }
 
 .ant-checkbox-checked .ant-checkbox-inner {
-    background-color: #5aa8d6;
-    border-color: #5aa8d6;
+    background-color: var(--lightblue);
+    border-color: var(--lightblue);
 }
 
 .ant-input-outlined:focus,
 .ant-input-outlined:hover,
 .ant-input-outlined:focus-within {
-    border-color: #5aa8d6 !important;
+    border-color: var(--lightblue) !important;
 }
 
 .ant-pagination .ant-pagination-item-active {
-    border-color: #5aa8d6 !important;
+    border-color: var(--lightblue) !important;
 }
 
 .ant-pagination .ant-pagination-item-active a {
-    color: #5aa8d6 !important;
+    color: var(--lightblue) !important;
 }
 
 input.ant-input,
@@ -94,4 +102,16 @@ span.ant-input-password {
     border-radius: 0 !important;
     box-shadow: none !important;
     min-height: 0 !important;
+}
+
+.anticon {
+    color: var(--white);
+}
+
+.ant-checkbox:hover {
+    background-color: transparent !important;
+}
+
+.ant-table-cell-row-hover {
+    background: #dedede !important;
 }

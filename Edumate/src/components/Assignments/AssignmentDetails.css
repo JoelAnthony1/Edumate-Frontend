@@ -1,14 +1,14 @@
 .assignment-details-container {
-  background: #cbe3ef;
+  background: var(--bgblue);
   padding: 20px;
   min-height: calc(100vh - 40px);
 }
 
 .assignment-details-card {
   border-radius: 20px !important;
-  -webkit-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.5) !important;
-  -moz-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.5) !important;
-  box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.5) !important;
+  -webkit-box-shadow: 10px 10px 5px 0px var(--black) !important;
+  -moz-box-shadow: 10px 10px 5px 0px var(--black)  !important;
+  box-shadow: 10px 10px 5px 0px var(--black)  !important;
 }
 
 .back-button {
@@ -18,12 +18,12 @@
 .ant-upload.ant-upload-drag {
   padding: 16px;
   background: #fafafa;
-  border: 1px dashed #d9d9d9;
+  border: 1px dashed #dfdfdf;
   border-radius: 2px;
 }
 
 .ant-upload.ant-upload-drag:hover {
-  border-color: #1890ff;
+  border-color: var(--lightblue) !important;
 }
 
 pre {

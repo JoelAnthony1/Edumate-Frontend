@@ -18,7 +18,7 @@ const Home = () => {
 
   return (
     <Layout>
-      <Sider style={{ backgroundColor: "#fafcfb" }} breakpoint="lg" collapsedWidth="0">
+      <Sider style={{ backgroundColor: "#ffffff" }} breakpoint="lg" collapsedWidth="0">
       <div className="logo">
             <img
               style={{ width: "200px", height: "200px"}}
@@ -34,9 +34,10 @@ const Home = () => {
         />
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, backgroundColor: "#5aa8d6" }}>
+        <Header style={{ padding: 0, backgroundColor: "#1B3B5B" }}>
           <div className="title-dash">
-            <Title level={5} style={{ color: "white" }}>
+            <Title level={5}
+            data-text={isList ? "Classroom List" : "Create Classroom"}>
               {isList ? "Classroom List" : "Create Classroom"}
             </Title>
           </div>

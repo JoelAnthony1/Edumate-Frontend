@@ -1,11 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap');
-
-* {
-    margin: 0px;
-    padding: 0px;
-    font-family: "Open Sans", sans-serif;
-}
-
 .logo-name-dash {
     color: #1890FF;
     margin-top: 10px;
@@ -33,17 +25,35 @@
 }
 
 .title-dash h5 {
-    font-size: 48px;
-    font-family: "Inter", sans-serif;
+    font-size: 50px;
+    font-family: "Poppins", sans-serif;
     margin-bottom: 0 !important;
-    text-shadow: 
-    1px 0px 1px #000, 0px 1px 1px #111, 
-    2px 1px 1px #000, 1px 2px 1px #111,
-    3px 2px 1px #000, 2px 3px 1px #111,
-    4px 3px 1px #000, 3px 4px 1px #111,
-    5px 4px 1px #000, 4px 5px 1px #111,
-    6px 5px 1px #000, 5px 6px 1px #111,
-    7px 6px 1px #000;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--white);
+    position: relative;
+}
+
+.title-dash h5::before {
+    content: attr(data-text);
+    position: absolute;
+    width: 0;
+    height: 100%;
+    color: var(--white);
+    white-space: nowrap;
+    overflow: hidden;
+    animation: animate 3s linear forwards;
+    filter: drop-shadow(0 0 10px var(--black));
+}
+
+@keyframes animate {
+
+    0%, 10% {
+        width: 0;
+    }
+
+    70%, 100% {
+        width: 100%;
+    }
 }
 
 .content-wrapper {
@@ -67,12 +77,12 @@
 }
 
 .ant-layout {
-    background-color: #cbe3ef;
+    background-color: var(--bgblue);
     height: 100vh;
 }
 
 .ant-layout-sider-children .logo {
-    background: #ffffff;
+    background: var(--white);
     margin-bottom: 20px !important;
     -webkit-box-shadow: 0px 8px 10px 0px rgba(0, 0, 0, 0.5);
     -moz-box-shadow: 0px 8px 10px 0px rgba(0, 0, 0, 0.5);
@@ -87,22 +97,22 @@ ul.ant-menu {
     background: none !important;
 }
 
-.ant-table-wrapper .ant-table-container table>thead>tr:first-child >*:first-child {
+.ant-table-wrapper .ant-table-container table>thead>tr:first-child>*:first-child {
     border-start-start-radius: 0px;
 }
 
-.ant-table-wrapper .ant-table-container table>thead>tr:first-child >*:last-child {
+.ant-table-wrapper .ant-table-container table>thead>tr:first-child>*:last-child {
     border-start-end-radius: 0px;
 }
 
 .ant-table-cell {
-    background-color: #ffffff;
+    background-color: var(--white);
 }
 
 .ant-table-thead .ant-table-cell {
     border-bottom: 1px solid #dedede !important;
-    background: #3a4163 !important;
-    color: #ffffff !important
+    background: var(--headerblue) !important;
+    color: var(--white) !important
 }
 
 .ant-table-cell::before {
@@ -111,11 +121,11 @@ ul.ant-menu {
 
 .ant-table-cell a.classroom-link {
     text-decoration: underline;
-    color: #5aa8d6;
+    color: var(--lightblue);
     font-weight: 600;
 }
 
 li.ant-menu-item-selected {
-    background-color: #5aa8d6 !important;
-    color: #ffffff !important;
+    background-color: var(--lightblue) !important;
+    color: var(--white) !important;
 }
