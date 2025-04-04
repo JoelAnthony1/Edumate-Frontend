@@ -1,6 +1,6 @@
 .student-details-container {
   padding: 20px 20px;
-  background: #cbe3ef;
+  background: var(--bgblue);
   min-height: calc(100vh - 40px);
 }
 
@@ -20,5 +20,5 @@
 }
 
 .ant-progress .ant-progress-bg {
-  background: #5aa8d6;
+  background: var(--lightblue);
 }

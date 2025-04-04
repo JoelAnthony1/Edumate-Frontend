@@ -124,3 +124,11 @@ span.ant-input-password {
 .ant-card-head {
     padding: 20px 34px !important;
 }
+
+.ant-upload-wrapper .ant-upload-drag-hover:not(.ant-upload-disabled) {
+    border-color: var(--lightblue);
+}
+
+.ant-spin-dot  {
+    color: var(--headerblue);
+}
